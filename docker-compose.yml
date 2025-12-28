@@ -1,0 +1,17 @@
+version: "3.8"
+
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: property-plus-db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: propertypassword
+      POSTGRES_DB: prop_plus
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data_v2:/var/lib/postgresql/data
+
+volumes:
+  postgres_data_v2:
