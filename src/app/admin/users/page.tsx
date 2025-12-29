@@ -74,6 +74,24 @@ export default function UsersPage() {
         setIsEditOpen(true);
     };
 
+    const handleDelete = async (userId: string) => {
+        if (confirm("Are you sure you want to delete this user?")) {
+            try {
+                const res = await fetch(`/api/admin/users/${userId}`, {
+                    method: 'DELETE',
+                });
+                if (res.ok) {
+                    fetchUsers();
+                } else {
+                    alert('Failed to delete user');
+                }
+            } catch (error) {
+                console.error("Failed to delete user", error);
+                alert('An error occurred while deleting the user');
+            }
+        }
+    };
+
     return (
         <div className="space-y-6">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -185,7 +203,7 @@ export default function UsersPage() {
                                                 <button onClick={() => handleEdit(user)} className="p-2 text-slate-400 hover:text-brand-600 hover:bg-brand-50 rounded-lg transition-colors">
                                                     <Edit size={18} />
                                                 </button>
-                                                <button className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors">
+                                                <button onClick={() => handleDelete(user.id)} className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors">
                                                     <Trash2 size={18} />
                                                 </button>
                                             </div>

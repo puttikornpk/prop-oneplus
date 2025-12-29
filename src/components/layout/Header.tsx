@@ -159,14 +159,21 @@ export const Header = () => {
                             </div>
                         ) : (
                             <div className="flex items-center text-sm font-medium text-slate-700 gap-1 whitespace-nowrap px-2">
-                                <User size={20} className="text-slate-700 mr-1" />
-                                <button onClick={() => setLoginOpen(true)} className="hover:text-brand-600 hover:scale-110 active:scale-95 transition-all duration-200">
-                                    {t('login')}
+                                <button
+                                    onClick={() => setLoginOpen(true)}
+                                    className="p-1 hover:text-brand-600 hover:scale-110 active:scale-95 transition-all duration-200"
+                                >
+                                    <User size={20} className="text-slate-700" />
                                 </button>
-                                <span className="text-slate-400">/</span>
-                                <button onClick={() => setRegisterOpen(true)} className="hover:text-brand-600 hover:scale-110 active:scale-95 transition-all duration-200">
-                                    {t('freeRegister')}
-                                </button>
+                                <div className="hidden sm:flex items-center gap-1">
+                                    <button onClick={() => setLoginOpen(true)} className="hover:text-brand-600 hover:scale-110 active:scale-95 transition-all duration-200">
+                                        {t('login')}
+                                    </button>
+                                    <span className="text-slate-400">/</span>
+                                    <button onClick={() => setRegisterOpen(true)} className="hover:text-brand-600 hover:scale-110 active:scale-95 transition-all duration-200">
+                                        {t('freeRegister')}
+                                    </button>
+                                </div>
                             </div>
                         )}
                     </div>

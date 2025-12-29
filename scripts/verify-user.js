@@ -4,22 +4,14 @@ const prisma = new PrismaClient();
 async function main() {
     try {
         console.log("Verifying User Registration...");
-        const email = "puttikorn@live.com"; // Matches default in form
-        const user = await prisma.user.findUnique({
-            where: { email },
-            include: { profile: true }
-        });
+        const email = "puttikorn.la@gmail.com"; // Matches default in form
+        const users = await prisma.user.findMany();
+        console.log("All users:", JSON.stringify(users, null, 2));
 
-        if (user) {
-            console.log("✅ User found:");
-            console.log(`- ID: ${user.id}`);
-            console.log(`- Email: ${user.email}`);
-            console.log(`- Role: ${user.role}`);
-            console.log(`- Profile Name: ${user.profile?.firstName} ${user.profile?.lastName || ''}`);
-            console.log(`- Phone: ${user.profile?.phone}`);
+        if (users.length > 0) {
+            console.log(`✅ Found ${users.length} users.`);
         } else {
-            console.log(`❌ User with email ${email} NOT found.`);
-            console.log("Please manually test the registration form on the frontend first.");
+            console.log("❌ No users found.");
         }
     } catch (e) {
         console.error(e);

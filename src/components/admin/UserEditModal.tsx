@@ -18,7 +18,8 @@ export default function UserEditModal({ isOpen, onClose, user, onSuccess }: User
         email: '',
         phone: '',
         address: '',
-        role: 'USER'
+        role: 'USER',
+        status: 'Active'
     });
 
     useEffect(() => {
@@ -29,7 +30,8 @@ export default function UserEditModal({ isOpen, onClose, user, onSuccess }: User
                 email: user.email || '',
                 phone: user.profile?.phone || '',
                 address: user.profile?.address || '',
-                role: user.role || 'USER'
+                role: user.role || 'USER',
+                status: user.status || 'Active'
             });
         }
     }, [user]);
@@ -114,12 +116,22 @@ export default function UserEditModal({ isOpen, onClose, user, onSuccess }: User
                     </div>
 
                     <div className="pt-4 border-t border-slate-100 flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                            <span className="text-sm text-slate-600">User Role</span>
-                            <select name="role" value={formData.role} onChange={handleChange} className="ml-2 px-3 py-1 bg-slate-100 border border-slate-200 rounded-md text-sm">
-                                <option value="USER">User</option>
-                                <option value="ADMIN">Admin</option>
-                            </select>
+                        <div className="flex items-center gap-6">
+                            <div className="flex items-center gap-2">
+                                <span className="text-sm text-slate-600">User Role</span>
+                                <select name="role" value={formData.role} onChange={handleChange} className="ml-2 px-3 py-1 bg-slate-100 border border-slate-200 rounded-md text-sm cursor-pointer focus:outline-none focus:ring-2 focus:ring-brand-500/20">
+                                    <option value="USER">User</option>
+                                    <option value="ADMIN">Admin</option>
+                                </select>
+                            </div>
+
+                            <div className="flex items-center gap-2">
+                                <span className="text-sm text-slate-600">Status</span>
+                                <select name="status" value={formData.status} onChange={handleChange} className="ml-2 px-3 py-1 bg-slate-100 border border-slate-200 rounded-md text-sm cursor-pointer focus:outline-none focus:ring-2 focus:ring-brand-500/20">
+                                    <option value="Active">Active</option>
+                                    <option value="Inactive">Inactive</option>
+                                </select>
+                            </div>
                         </div>
                     </div>
                 </div>

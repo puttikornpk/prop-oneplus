@@ -6,7 +6,7 @@ export async function PUT(request: Request, props: { params: Promise<{ id: strin
     try {
         const id = params.id;
         const body = await request.json();
-        const { firstName, lastName, phone, address, email, role } = body;
+        const { firstName, lastName, phone, address, email, role, status } = body;
 
         // Check if user exists
         const existingUser = await prisma.user.findUnique({
@@ -18,12 +18,17 @@ export async function PUT(request: Request, props: { params: Promise<{ id: strin
             return NextResponse.json({ error: 'User not found' }, { status: 404 });
         }
 
+        // Map frontend status 'Inactive' -> 'ARCHIVED', 'Active' -> 'ACTIVE'
+        // If status is passed, use it. Otherwise ignore.
+        const statusEnum = status === 'Inactive' ? 'ARCHIVED' : (status === 'Active' ? 'ACTIVE' : undefined);
+
         // Update User and Profile
         const updatedUser = await prisma.user.update({
             where: { id },
             data: {
-                email, // allow email update if needed, add uniqueness check if critical
+                email,
                 role,
+                status: statusEnum,
                 profile: {
                     upsert: {
                         create: {

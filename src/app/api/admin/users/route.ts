@@ -7,15 +7,15 @@ export async function GET(request: Request) {
         const { searchParams } = new URL(request.url);
         const q = searchParams.get('q');
         const role = searchParams.get('role');
-        const status = searchParams.get('status'); // 'Active' | 'Inactive'
+        const status = searchParams.get('status');
 
-        // Status Logic: currently all users are Active. 
-        // If filtering by 'Inactive', return empty immediately.
-        if (status === 'Inactive') {
-            return NextResponse.json([]);
-        }
 
         const where: any = {};
+
+        if (status) {
+            const dbStatus = status === 'Inactive' ? 'ARCHIVED' : 'ACTIVE';
+            where.status = dbStatus;
+        }
 
         if (q) {
             where.OR = [
@@ -64,7 +64,7 @@ export async function GET(request: Request) {
             name: user.profile ? `${user.profile.firstName || ''} ${user.profile.lastName || ''}`.trim() : 'No Name',
             email: user.email,
             role: user.role,
-            status: 'Active', // Logic could be based on bans/verification
+            status: user.status === 'ARCHIVED' ? 'Inactive' : 'Active',
             lastLogin: user.updatedAt.toISOString(), // simplified
             joinedAt: user.createdAt,
             profile: user.profile
