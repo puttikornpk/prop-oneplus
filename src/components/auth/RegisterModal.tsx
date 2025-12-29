@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { useRouter } from "next/navigation";
 import { Mail, Phone, User, Lock, Facebook, X } from "lucide-react";
+import { useLanguage } from "@/context/LanguageContext";
 
 // Mock Google Icon 
 const GoogleIcon = () => (
@@ -23,15 +24,16 @@ interface RegisterModalProps {
 
 export function RegisterModal({ isOpen, onClose, onSwitchToLogin }: RegisterModalProps) {
     const router = useRouter();
+    const { t } = useLanguage();
     const [mounted, setMounted] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState("");
     const [isTermsOpen, setIsTermsOpen] = useState(false);
     const [formData, setFormData] = useState({
-        email: "puttikorn@live.com", // Default from image
-        phone: "0889443425",
+        email: "",
+        phone: "",
         countryCode: "+66",
-        username: "Puttikorn",
+        username: "",
         password: "",
         confirmPassword: "",
         acceptTerms: false
@@ -125,14 +127,14 @@ export function RegisterModal({ isOpen, onClose, onSwitchToLogin }: RegisterModa
                             <div className="w-full border-t border-slate-400"></div>
                         </div>
                         <div className="relative flex justify-center text-sm">
-                            <span className="px-4 text-slate-700 bg-white font-medium text-lg">หรือ</span>
+                            <span className="px-4 text-slate-700 bg-white font-medium text-lg">{t('orSeparator')}</span>
                         </div>
                     </div>
 
                     <form onSubmit={handleSubmit} className="space-y-4">
                         {/* Email */}
                         <div className="space-y-1">
-                            <label className="text-brand-600 font-medium">อีเมล</label>
+                            <label className="text-brand-600 font-medium">{t('emailLabel')}</label>
                             <div className="relative">
                                 <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
                                 <input
@@ -141,7 +143,7 @@ export function RegisterModal({ isOpen, onClose, onSwitchToLogin }: RegisterModa
                                     value={formData.email}
                                     onChange={handleChange}
                                     className="w-full pl-10 pr-4 py-3 bg-brand-50/50 border border-brand-200 rounded-lg focus:outline-none focus:border-brand-500 text-slate-700 placeholder-slate-400"
-                                    placeholder="name@example.com"
+                                    placeholder={t('emailPlaceholder')}
                                     required
                                 />
                             </div>
@@ -149,7 +151,7 @@ export function RegisterModal({ isOpen, onClose, onSwitchToLogin }: RegisterModa
 
                         {/* Phone */}
                         <div className="space-y-1">
-                            <label className="text-brand-600 font-medium">เบอร์โทร</label>
+                            <label className="text-brand-600 font-medium">{t('phoneLabel')}</label>
                             <div className="flex gap-2">
                                 <div className="relative w-32 shrink-0">
                                     <div className="absolute inset-y-0 left-0 flex items-center pl-2 pointer-events-none">
@@ -171,7 +173,7 @@ export function RegisterModal({ isOpen, onClose, onSwitchToLogin }: RegisterModa
                                         value={formData.phone}
                                         onChange={handleChange}
                                         className="w-full pl-10 pr-4 py-3 bg-brand-50/50 border border-brand-200 rounded-lg focus:outline-none focus:border-brand-500 text-slate-700"
-                                        placeholder="08X-XXX-XXXX"
+                                        placeholder={t('phonePlaceholder')}
                                     />
                                 </div>
                             </div>
@@ -179,7 +181,7 @@ export function RegisterModal({ isOpen, onClose, onSwitchToLogin }: RegisterModa
 
                         {/* Username */}
                         <div className="space-y-1">
-                            <label className="text-brand-600 font-medium">ชื่อผู้ใช้</label>
+                            <label className="text-brand-600 font-medium">{t('usernameLabel')}</label>
                             <div className="relative">
                                 <User className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
                                 <input
@@ -188,7 +190,7 @@ export function RegisterModal({ isOpen, onClose, onSwitchToLogin }: RegisterModa
                                     value={formData.username}
                                     onChange={handleChange}
                                     className="w-full pl-10 pr-4 py-3 bg-brand-50/50 border border-brand-200 rounded-lg focus:outline-none focus:border-brand-500 text-slate-700"
-                                    placeholder="Username"
+                                    placeholder={t('usernamePlaceholder')}
                                     required
                                 />
                             </div>
@@ -196,7 +198,7 @@ export function RegisterModal({ isOpen, onClose, onSwitchToLogin }: RegisterModa
 
                         {/* Password */}
                         <div className="space-y-1">
-                            <label className="text-brand-600 font-medium">รหัสผ่าน</label>
+                            <label className="text-brand-600 font-medium">{t('passwordPlaceholder')}</label>
                             <div className="relative">
                                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
                                 <input
@@ -204,8 +206,8 @@ export function RegisterModal({ isOpen, onClose, onSwitchToLogin }: RegisterModa
                                     name="password"
                                     value={formData.password}
                                     onChange={handleChange}
-                                    className="w-full pl-10 pr-4 py-3 bg-brand-50/50 border border-brand-200 rounded-lg focus:outline-none focus:border-brand-500 text-slate-700 text-2xl tracking-widest"
-                                    placeholder="•••••••"
+                                    className="w-full pl-10 pr-4 py-3 bg-brand-50/50 border border-brand-200 rounded-lg focus:outline-none focus:border-brand-500 text-slate-700"
+                                    placeholder={t('registerPasswordPlaceholder')}
                                     required
                                 />
                             </div>
@@ -213,7 +215,7 @@ export function RegisterModal({ isOpen, onClose, onSwitchToLogin }: RegisterModa
 
                         {/* Confirm Password */}
                         <div className="space-y-1">
-                            <label className="text-brand-600 font-medium">ยืนยันรหัสผ่าน</label>
+                            <label className="text-brand-600 font-medium">{t('confirmPasswordLabel')}</label>
                             <div className="relative">
                                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
                                 <input
@@ -221,8 +223,8 @@ export function RegisterModal({ isOpen, onClose, onSwitchToLogin }: RegisterModa
                                     name="confirmPassword"
                                     value={formData.confirmPassword}
                                     onChange={handleChange}
-                                    className="w-full pl-10 pr-4 py-3 bg-brand-50/50 border border-brand-200 rounded-lg focus:outline-none focus:border-brand-500 text-slate-700 text-2xl tracking-widest"
-                                    placeholder="•••••••"
+                                    className="w-full pl-10 pr-4 py-3 bg-brand-50/50 border border-brand-200 rounded-lg focus:outline-none focus:border-brand-500 text-slate-700"
+                                    placeholder={t('registerPasswordPlaceholder')}
                                     required
                                 />
                             </div>
@@ -239,7 +241,7 @@ export function RegisterModal({ isOpen, onClose, onSwitchToLogin }: RegisterModa
                                 className="w-5 h-5 rounded border-brand-300 text-brand-600 focus:ring-brand-500"
                             />
                             <label htmlFor="terms" className="text-slate-700">
-                                ยอมรับเงื่อนไขข้อตกลง <button type="button" onClick={() => setIsTermsOpen(true)} className="underline text-[#248D9E] font-medium hover:text-[#1d7482]">คลิกที่นี่</button> เพื่ออ่าน
+                                {t('acceptTermsLabel')} <button type="button" onClick={() => setIsTermsOpen(true)} className="underline text-[#248D9E] font-medium hover:text-[#1d7482]">{t('clickHere')}</button> {t('readTerms')}
                             </label>
                         </div>
 
@@ -256,11 +258,11 @@ export function RegisterModal({ isOpen, onClose, onSwitchToLogin }: RegisterModa
                             disabled={isLoading}
                             className="w-full bg-brand-500 hover:bg-brand-600 text-white font-medium py-3 rounded-lg shadow-lg hover:shadow-xl transition-all text-lg mt-6"
                         >
-                            {isLoading ? 'Processing...' : 'สมัครสมาชิก'}
+                            {isLoading ? t('processing') : t('registerButton')}
                         </button>
 
                         <div className="text-center text-slate-600 mt-4 pb-2">
-                            หากท่านเคยมีบัญชีอยู่แล้ว เข้าสู่ระบบที่นี่ <button type="button" onClick={onSwitchToLogin} className="text-[#3AB0FF] underline">เข้าสู่ระบบ</button>
+                            {t('alreadyHaveAccount')} <button type="button" onClick={onSwitchToLogin} className="text-[#3AB0FF] underline">{t('loginLink')}</button>
                         </div>
                     </form>
                 </div>
@@ -271,7 +273,7 @@ export function RegisterModal({ isOpen, onClose, onSwitchToLogin }: RegisterModa
                 <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm" onClick={() => setIsTermsOpen(false)}>
                     <div className="bg-white rounded-xl shadow-2xl w-full max-w-2xl max-h-[80vh] flex flex-col overflow-hidden" onClick={e => e.stopPropagation()}>
                         <div className="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50">
-                            <h3 className="text-xl font-bold text-slate-800">ข้อกำหนดและเงื่อนไข / Terms and Conditions</h3>
+                            <h3 className="text-xl font-bold text-slate-800">{t('termsTitle')}</h3>
                             <button onClick={() => setIsTermsOpen(false)} className="text-slate-400 hover:text-slate-600 transition-colors">
                                 <X size={24} />
                             </button>
@@ -308,7 +310,7 @@ export function RegisterModal({ isOpen, onClose, onSwitchToLogin }: RegisterModa
                                 onClick={() => setIsTermsOpen(false)}
                                 className="px-6 py-2 bg-slate-200 text-slate-700 rounded-lg font-medium hover:bg-slate-300 transition-colors"
                             >
-                                ปิด / Close
+                                {t('closeButton')}
                             </button>
                         </div>
                     </div>

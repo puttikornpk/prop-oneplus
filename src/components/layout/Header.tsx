@@ -92,7 +92,7 @@ export const Header = () => {
 
                     <LanguageSwitcher />
 
-                    <div className="relative flex flex-col items-center justify-center -space-y-1 cursor-pointer group">
+                    <div className="relative flex items-center">
                         {user ? (
                             <div className="relative" ref={userMenuRef}>
                                 <button
@@ -158,16 +158,13 @@ export const Header = () => {
                                 )}
                             </div>
                         ) : (
-                            <div className="h-[36px]"></div>
-                        )}
-
-                        {!user && (
-                            <div className="flex items-center text-[11px] font-medium text-slate-500 gap-1 whitespace-nowrap">
-                                <button onClick={() => setLoginOpen(true)} className="hover:text-brand-600 transition-colors group-hover/login:text-brand-600">
+                            <div className="flex items-center text-sm font-medium text-slate-700 gap-1 whitespace-nowrap px-2">
+                                <User size={20} className="text-slate-700 mr-1" />
+                                <button onClick={() => setLoginOpen(true)} className="hover:text-brand-600 hover:scale-110 active:scale-95 transition-all duration-200">
                                     {t('login')}
                                 </button>
                                 <span className="text-slate-400">/</span>
-                                <button onClick={() => setRegisterOpen(true)} className="hover:text-brand-600 transition-colors group-hover/register:text-brand-600">
+                                <button onClick={() => setRegisterOpen(true)} className="hover:text-brand-600 hover:scale-110 active:scale-95 transition-all duration-200">
                                     {t('freeRegister')}
                                 </button>
                             </div>

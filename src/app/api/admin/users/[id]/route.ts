@@ -58,8 +58,10 @@ export async function DELETE(request: Request, props: { params: Promise<{ id: st
     const params = await props.params;
     try {
         const id = params.id;
-        await prisma.user.delete({
-            where: { id }
+        // Soft Delete: Check if already archived? Or just set.
+        await prisma.user.update({
+            where: { id },
+            data: { status: 'ARCHIVED' }
         });
 
         return NextResponse.json({ success: true });

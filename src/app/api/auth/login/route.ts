@@ -36,6 +36,13 @@ export async function POST(req: Request) {
             );
         }
 
+        if (user.status === 'ARCHIVED') {
+            return NextResponse.json(
+                { error: "Your account has been archived. Please contact support." },
+                { status: 403 }
+            );
+        }
+
         // Verify Password
         const isValid = await verifyPassword(password, user.password);
         if (!isValid) {
@@ -61,11 +68,22 @@ export async function POST(req: Request) {
 
         const { password: _, ...userWithoutPassword } = user;
 
-        return NextResponse.json({
+        const response = NextResponse.json({
             user: userWithoutPassword,
             token: session.token,
             expiresAt: session.expiresAt
         });
+
+        response.cookies.set({
+            name: 'token',
+            value: session.token,
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            path: '/',
+            expires: session.expiresAt,
+        });
+
+        return response;
 
     } catch (error) {
         console.error("Login error:", error);

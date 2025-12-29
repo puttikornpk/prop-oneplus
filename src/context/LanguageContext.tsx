@@ -67,6 +67,49 @@ const translations = {
     terms: { TH: "ข้อกำหนดและเงื่อนไข", EN: "Terms of Service" },
     cookie: { TH: "นโยบายคุกกี้", EN: "Cookie Policy" },
     copyright: { TH: "สงวนลิขสิทธิ์", EN: "All rights reserved." },
+
+    // Auth Modal
+    loginTitle: { TH: "เข้าสู่ระบบเพื่อใช้งาน", EN: "Login to continue" },
+    loginWith: { TH: "เข้าสู่ระบบด้วย", EN: "Login with" },
+    phoneEmailUserPlaceholder: { TH: "เบอร์โทร / อีเมล / ชื่อผู้ใช้ (Username)", EN: "Phone / Email / Username" },
+    passwordPlaceholder: { TH: "รหัสผ่าน", EN: "Password" },
+    continue: { TH: "ดำเนินการต่อ", EN: "Continue" },
+    loginButton: { TH: "เข้าสู่ระบบ", EN: "Login" },
+    quickLogin: { TH: "ช่องทางเข้าสู่ระบบแบบรวดเร็ว", EN: "Quick login with" },
+    orRegisterFree: { TH: "หรือสมัครสมาชิกฟรีเพิ่มเติม", EN: "Or register for free more" },
+    backToUser: { TH: "← กลับไปแก้ไขชื่อผู้ใช้", EN: "← Back to username" },
+    processing: { TH: "กำลังดำเนินการ...", EN: "Processing..." },
+    enterIdentifierError: { TH: "กรุณาระบุเบอร์โทร / อีเมล / ชื่อผู้ใช้", EN: "Please enter phone, email, or username" },
+    enterPasswordError: { TH: "กรุณาระบุรหัสผ่าน", EN: "Please enter your password" },
+    activationTitle: { TH: "ยืนยันการสมัครสมาชิกด้วยอีเมล", EN: "Confirm Email Registration" },
+    activationLabel: { TH: "Activate Code ที่ได้รับทางอีเมล", EN: "Activate Code from Email" },
+    activationConfirm: { TH: "ยืนยัน", EN: "Confirm" },
+    activationNotReceived: { TH: "หากยังไม่ได้รับ Activate Code ที่ส่งไปทางอีเมล", EN: "If you have not received the Activate Code via email" },
+
+    // Register Modal
+    emailLabel: { TH: "อีเมล", EN: "Email" },
+    phoneLabel: { TH: "เบอร์โทร", EN: "Phone Number" },
+    usernameLabel: { TH: "ชื่อผู้ใช้", EN: "Username" },
+    confirmPasswordLabel: { TH: "ยืนยันรหัสผ่าน", EN: "Confirm Password" },
+    acceptTermsLabel: { TH: "ยอมรับข้อตกลง", EN: "Accept Agreement" },
+    clickHere: { TH: "คลิกที่นี่", EN: "Click here" },
+    readTerms: { TH: "เพื่ออ่าน", EN: "to read" },
+    registerButton: { TH: "สมัครสมาชิก", EN: "Register" },
+    alreadyHaveAccount: { TH: "หากท่านสมัครบัญชีแล้ว", EN: "If you already have an account" },
+    loginLink: { TH: "กดเข้าระบบที่นี่", EN: "click here to login" },
+    orSeparator: { TH: "หรือเลือกระบุข้อมูลเอง", EN: "Or enter details manually" },
+    termsTitle: { TH: "ข้อกำหนดและเงื่อนไข / Terms and Conditions", EN: "Terms and Conditions" },
+    closeButton: { TH: "ปิด / Close", EN: "Close" },
+    errorAcceptTerms: { TH: "กรุณายอมรับเงื่อนไขข้อตกลง", EN: "Please accept the terms and conditions" },
+    errorPasswordMatch: { TH: "รหัสผ่านไม่ตรงกัน", EN: "Passwords do not match" },
+    registerFailed: { TH: "การสมัครสมาชิกไม่สำเร็จ", EN: "Registration failed" },
+
+    // Register Placeholders
+    emailPlaceholder: { TH: "E-mail *", EN: "E-mail *" },
+    phonePlaceholder: { TH: "เลขหมายโทรศัพท์ 9-10 digits*", EN: "Tel no 9-10 digits*" },
+    usernamePlaceholder: { TH: "รหัสผู้ใช้ 5-18 digits*", EN: "User 5-10 digits*" },
+    registerPasswordPlaceholder: { TH: "รหัสผ่าน 5-10 digits*", EN: "Password 5-10 digits*" },
+    registerConfirmPasswordPlaceholder: { TH: "ยืนยันรหัสผ่าน *", EN: "Confirm Password *" }
 };
 
 interface LanguageContextType {

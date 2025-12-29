@@ -7,6 +7,8 @@ import { PropertyCard } from "@/components/property/PropertyCard";
 import { MOCK_LISTINGS } from "@/data/mock-listings";
 import { useLanguage } from "@/context/LanguageContext";
 
+import { PropertyTypeMenu } from "@/components/home/PropertyTypeMenu";
+
 export default function Home() {
   const { t } = useLanguage();
   return (
@@ -14,6 +16,7 @@ export default function Home() {
       <Header />
 
       <main className="container mx-auto px-4 py-8">
+        <PropertyTypeMenu />
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Sidebar Filters */}
           <Sidebar />

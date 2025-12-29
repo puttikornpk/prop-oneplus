@@ -7,13 +7,28 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum Role {
+  USER
+  ADMIN
+}
+
+enum UserStatus {
+  ACTIVE
+  ARCHIVED
+}
+
 model User {
   id        String   @id @default(uuid())
-  email     String   @unique
-  password  String
-  role      Role     @default(USER)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  email             String   @unique
+  username          String?  @unique
+  password          String
+  role              Role     @default(USER)
+  status            UserStatus @default(ACTIVE)
+  isVerified        Boolean  @default(false)
+  activationCode    String?
+  activationExpires DateTime?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
   
   profile   Profile?
   sessions  Session[]
@@ -39,9 +54,4 @@ model Session {
   createdAt DateTime @default(now())
   
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-}
-
-enum Role {
-  USER
-  ADMIN
 }

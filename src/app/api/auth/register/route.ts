@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { hashPassword } from "@/lib/auth";
+import { sendVerificationEmail } from "@/lib/email";
 
 export async function POST(req: Request) {
     try {
@@ -15,36 +16,53 @@ export async function POST(req: Request) {
             );
         }
 
-        // Check if user exists
-        const existingUser = await prisma.user.findUnique({
-            where: { email },
+        // Check if user exists (email or username)
+        const existingUser = await prisma.user.findFirst({
+            where: {
+                OR: [
+                    { email },
+                    { username }
+                ]
+            },
         });
 
         if (existingUser) {
-            return NextResponse.json(
-                { error: "User already exists" },
-                { status: 409 }
-            );
+            if (existingUser.email === email) {
+                return NextResponse.json(
+                    { error: "User with this email already exists" },
+                    { status: 409 }
+                );
+            }
+            if (existingUser.username === username) {
+                return NextResponse.json(
+                    { error: "Username is already taken" },
+                    { status: 409 }
+                );
+            }
         }
 
         // Create User
         const hashedPassword = await hashPassword(password);
 
-        // Assumption: 'username' maps to 'firstName' based on UI "ชื่อผู้ใช้". 
-        // We'll split it if needed, or just put it in firstName. 
-        // Given the UI shows single field, treating it as firstName seems appropriate or firstName alias.
+        // Generate Activation Code (6 digits)
+        const activationCode = Math.floor(100000 + Math.random() * 900000).toString();
+        const activationExpires = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
+
+        // console.log("MOCK EMAIL SENT TO " + email + " WITH CODE: " + activationCode);
 
         const user = await prisma.user.create({
             data: {
                 email,
+                username, // Save username unique field
                 password: hashedPassword,
                 role: 'USER',
+                isVerified: false,
+                activationCode,
+                activationExpires,
                 profile: {
                     create: {
                         firstName: username,
-                        // lastName: "", // Optional
                         phone: phone || "",
-                        // Setup default avatar or other fields if needed
                     }
                 }
             },
@@ -53,9 +71,9 @@ export async function POST(req: Request) {
             }
         });
 
-        // We could create a session here and login immediately, 
-        // but let's stick to standard flow: Register -> Login (or return success).
-        // Returning user info (without password)
+        // Send Email
+        await sendVerificationEmail(email, username, activationCode);
+        console.log(`[DEV-Log] Verification Code for ${email}: ${activationCode}`);
 
         const { password: _, ...userWithoutPassword } = user;
 
