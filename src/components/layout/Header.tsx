@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { signOut } from "next-auth/react";
 import { User, Menu, Bell, Heart, MessageSquare, History } from "lucide-react";
 import { Logo } from "@/components/ui/Logo";
 
@@ -33,7 +34,8 @@ export const Header = () => {
         };
     }, []);
 
-    const handleLogout = () => {
+    const handleLogout = async () => {
+        await signOut({ redirect: false });
         logout();
         setUserMenuOpen(false);
         router.push('/');

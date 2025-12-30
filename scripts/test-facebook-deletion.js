@@ -11,7 +11,7 @@ async function testDeletionCallback() {
         process.exit(1);
     }
 
-    const userId = "1234567890_TEST_USER"; // Mock Facebook User ID
+    const userId = "puttikorn@live.com"; // Mock Facebook User ID
 
     // 1. Prepare Payload
     const payload = {
