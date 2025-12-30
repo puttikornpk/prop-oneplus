@@ -20,8 +20,8 @@ export async function POST(req: Request) {
             where: {
                 OR: [
                     { email: identifier },
-                    { profile: { phone: identifier } },
-                    { profile: { firstName: identifier } }
+                    { username: identifier },
+                    { profile: { phone: identifier } }
                 ]
             },
             include: {
