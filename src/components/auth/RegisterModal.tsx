@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { useRouter } from "next/navigation";
+import { signIn } from "next-auth/react";
 import { Mail, Phone, User, Lock, Facebook, X } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 
@@ -112,7 +113,10 @@ export function RegisterModal({ isOpen, onClose, onSwitchToLogin }: RegisterModa
 
                     {/* Social Buttons */}
                     <div className="grid grid-cols-2 gap-4 mb-8 mt-4">
-                        <button className="flex items-center justify-center gap-2 py-2.5 px-4 bg-transparent border border-brand-300 rounded-lg text-slate-700 hover:bg-brand-50 transition-colors">
+                        <button
+                            onClick={() => signIn('facebook')}
+                            className="flex items-center justify-center gap-2 py-2.5 px-4 bg-transparent border border-brand-300 rounded-lg text-slate-700 hover:bg-brand-50 transition-colors"
+                        >
                             <Facebook className="text-[#1877F2]" size={20} fill="#1877F2" />
                             <span className="font-medium">Facebook</span>
                         </button>
@@ -281,12 +285,12 @@ export function RegisterModal({ isOpen, onClose, onSwitchToLogin }: RegisterModa
                         <div className="p-6 overflow-y-auto space-y-6 text-slate-600 leading-relaxed text-sm">
                             <div className="space-y-4">
                                 <h4 className="font-bold text-lg text-slate-800 border-l-4 border-brand-500 pl-3">ภาษาไทย</h4>
-                                <p>ยินดีต้อนรับสู่ Property Plus ("แพลตฟอร์ม") การเข้าถึงและใช้งานแพลตฟอร์มนี้แสดงว่าท่านยอมรับข้อกำหนดและเงื่อนไขดังต่อไปนี้:</p>
+                                <p>ยินดีต้อนรับสู่ PropertyOnePlus ("แพลตฟอร์ม") การเข้าถึงและใช้งานแพลตฟอร์มนี้แสดงว่าท่านยอมรับข้อกำหนดและเงื่อนไขดังต่อไปนี้:</p>
                                 <ul className="list-disc pl-5 space-y-2">
                                     <li><strong>1. วัตถุประสงค์:</strong> แพลตฟอร์มนี้ให้บริการเป็นสื่อกลางสำหรับผู้ที่ต้องการซื้อ ขาย หรือเช่าอสังหาริมทรัพย์ เช่น บ้าน คอนโด และที่ดิน</li>
                                     <li><strong>2. ข้อมูลถูกต้อง:</strong> ผู้ใช้งานตกลงที่จะให้ข้อมูลที่ถูกต้อง ครบถ้วน และเป็นปัจจุบัน ในการสมัครสมาชิกและการลงประกาศ</li>
                                     <li><strong>3. ข้อห้าม:</strong> ห้ามลงประกาศที่มีเนื้อหาไม่เหมาะสม หลอกลวง ผิดกฎหมาย หรือละเมิดลิขสิทธิ์ของผู้อื่น</li>
-                                    <li><strong>4. ความรับผิดชอบ:</strong> Property Plus เป็นเพียงผู้ให้บริการพื้นที่ลงประกาศ ไม่ได้รับผิดชอบต่อความเสียหายที่เกิดจากการทำธุรกรรมระหว่างผู้ใช้</li>
+                                    <li><strong>4. ความรับผิดชอบ:</strong> PropertyOnePlus เป็นเพียงผู้ให้บริการพื้นที่ลงประกาศ ไม่ได้รับผิดชอบต่อความเสียหายที่เกิดจากการทำธุรกรรมระหว่างผู้ใช้</li>
                                     <li><strong>5. ข้อมูลส่วนบุคคล:</strong> เราให้ความสำคัญกับความเป็นส่วนตัว ข้อมูลของท่านจะถูกจัดการตามนโยบายความเป็นส่วนตัวของเรา</li>
                                 </ul>
                             </div>
@@ -295,12 +299,12 @@ export function RegisterModal({ isOpen, onClose, onSwitchToLogin }: RegisterModa
 
                             <div className="space-y-4">
                                 <h4 className="font-bold text-lg text-slate-800 border-l-4 border-blue-500 pl-3">English</h4>
-                                <p>Welcome to Property Plus (the "Platform"). By accessing and using this Platform, you agree to the following terms and conditions:</p>
+                                <p>Welcome to PropertyOnePlus (the "Platform"). By accessing and using this Platform, you agree to the following terms and conditions:</p>
                                 <ul className="list-disc pl-5 space-y-2">
                                     <li><strong>1. Purpose:</strong> The Platform serves as an intermediary for users wishing to buy, sell, or rent real estate properties such as houses, condos, and land.</li>
                                     <li><strong>2. Accurate Information:</strong> Users agree to provide accurate, complete, and up-to-date information during registration and listing creation.</li>
                                     <li><strong>3. Prohibited Conduct:</strong> Listing content that is inappropriate, fraudulent, illegal, or infringes on others' rights is strictly prohibited.</li>
-                                    <li><strong>4. Liability:</strong> Property Plus acts solely as a listing venue and is not liable for any damages arising from transactions between users.</li>
+                                    <li><strong>4. Liability:</strong> PropertyOnePlus acts solely as a listing venue and is not liable for any damages arising from transactions between users.</li>
                                     <li><strong>5. Privacy:</strong> We value your privacy. Your data will be handled in accordance with our Privacy Policy.</li>
                                 </ul>
                             </div>

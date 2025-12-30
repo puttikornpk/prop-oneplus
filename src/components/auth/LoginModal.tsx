@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { signIn } from "next-auth/react";
 import { User, Lock, Facebook, ArrowRight, LogIn, X, Shield } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { useLanguage } from "@/context/LanguageContext";
@@ -297,7 +298,10 @@ export function LoginModal({ isOpen, onClose, onSwitchToRegister }: LoginModalPr
                         </div>
 
                         <div className="grid grid-cols-2 gap-4">
-                            <button className="flex items-center justify-center gap-2 py-3 px-4 bg-white border border-slate-200 rounded-lg text-slate-700 hover:bg-slate-50 hover:border-slate-300 transition-all duration-200 shadow-sm">
+                            <button
+                                onClick={() => signIn('facebook')}
+                                className="flex items-center justify-center gap-2 py-3 px-4 bg-white border border-slate-200 rounded-lg text-slate-700 hover:bg-slate-50 hover:border-slate-300 transition-all duration-200 shadow-sm"
+                            >
                                 <Facebook className="text-[#1877F2]" size={20} fill="#1877F2" />
                                 <span className="font-medium">Facebook</span>
                             </button>

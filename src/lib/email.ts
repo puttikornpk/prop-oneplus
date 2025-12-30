@@ -14,20 +14,20 @@ export async function sendVerificationEmail(email: string, username: string, cod
     const activationLink = `https://www.propertyplus.co.th/activate?user=${username}&code=${code}`;
 
     const mailOptions = {
-        from: process.env.SMTP_FROM || '"PropertyPlus" <noreply@property-plus.com>',
+        from: process.env.SMTP_FROM || '"PropertyOnePlus" <noreply@property-oneplus.com>',
         to: email,
-        subject: 'ยินดีต้อนรับสู่ PropertyPlus - กรุณายืนยันบัญชีเพื่อเริ่มต้นใช้งาน (Welcome to PropertyPlus - Please verify your account)',
-        text: `Welcome to PropertyPlus! Your verification code is: ${code}`,
+        subject: 'ยินดีต้อนรับสู่ PropertyOnePlus - กรุณายืนยันบัญชีเพื่อเริ่มต้นใช้งาน (Welcome to PropertyOnePlus - Please verify your account)',
+        text: `Welcome to PropertyOnePlus! Your verification code is: ${code}`,
         html: `
             <div style="font-family: Arial, sans-serif; color: #333; line-height: 1.6;">
-                <h2 style="color: #20B486;">ยินดีต้อนรับสู่ PropertyPlus - กรุณายืนยันบัญชีเพื่อเริ่มต้นใช้งาน</h2>
+                <h2 style="color: #20B486;">ยินดีต้อนรับสู่ PropertyOnePlus - กรุณายืนยันบัญชีเพื่อเริ่มต้นใช้งาน</h2>
                 <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;">
                 
                 <p><strong>เนื้อหาอีเมล:</strong></p>
                 <p>สวัสดีคุณ <strong>${username}</strong>,</p>
                 
-                <p>ยินดีต้อนรับสู่ครอบครัว PropertyPlus! การลงทะเบียนบัญชีสมาชิกของคุณเสร็จสมบูรณ์แล้ว คุณสามารถเข้าสู่ระบบเพื่อใช้งานฟีเจอร์ต่างๆ ได้ทันทีด้วยข้อมูลด้านล่างนี้</p>
-                <p><em>Welcome to the PropertyPlus family! Your registration is now complete. You can log in and access our features immediately using the credentials below.</em></p>
+                <p>ยินดีต้อนรับสู่ครอบครัว PropertyOnePlus! การลงทะเบียนบัญชีสมาชิกของคุณเสร็จสมบูรณ์แล้ว คุณสามารถเข้าสู่ระบบเพื่อใช้งานฟีเจอร์ต่างๆ ได้ทันทีด้วยข้อมูลด้านล่างนี้</p>
+                <p><em>Welcome to the PropertyOnePlus family! Your registration is now complete. You can log in and access our features immediately using the credentials below.</em></p>
                 
                 <div style="background-color: #f9f9f9; padding: 20px; border-radius: 8px; margin: 20px 0;">
                     <h3 style="color: #20B486; margin-top: 0;">ข้อมูลบัญชีของคุณ (Your Account Details)</h3>
@@ -41,9 +41,9 @@ export async function sendVerificationEmail(email: string, username: string, cod
                 
                 <hr style="border: 0; border-top: 1px solid #eee; margin: 30px 0;">
 
-                <h3 style="color: #444;">เกี่ยวกับ PropertyPlus</h3>
-                <p>PropertyPlus เป็นแพลตฟอร์มอสังหาริมทรัพย์ยุคใหม่ที่รวบรวมข้อมูลเชิงลึกและเทรนด์ตลาดที่น่าสนใจ เรามุ่งเน้นการนำเสนอรีวิวโครงการที่ตรงไปตรงมา พร้อมบทความวิเคราะห์การลงทุนที่เข้าใจง่าย เพื่อให้คุณตัดสินใจได้อย่างมั่นใจที่สุด นี่คือคอมมูนิตี้คุณภาพสำหรับคนรักอสังหาฯ อย่างแท้จริง</p>
-                <p><em>PropertyPlus is a modern real estate platform that gathers deep insights and market trends. We focus on providing honest property reviews and easy-to-understand investment analyses to help you make decisions with confidence. This is the quality community for real estate enthusiasts.</em></p>
+                <h3 style="color: #444;">เกี่ยวกับ PropertyOnePlus</h3>
+                <p>PropertyOnePlus เป็นแพลตฟอร์มอสังหาริมทรัพย์ยุคใหม่ที่รวบรวมข้อมูลเชิงลึกและเทรนด์ตลาดที่น่าสนใจ เรามุ่งเน้นการนำเสนอรีวิวโครงการที่ตรงไปตรงมา พร้อมบทความวิเคราะห์การลงทุนที่เข้าใจง่าย เพื่อให้คุณตัดสินใจได้อย่างมั่นใจที่สุด นี่คือคอมมูนิตี้คุณภาพสำหรับคนรักอสังหาฯ อย่างแท้จริง</p>
+                <p><em>PropertyOnePlus is a modern real estate platform that gathers deep insights and market trends. We focus on providing honest property reviews and easy-to-understand investment analyses to help you make decisions with confidence. This is the quality community for real estate enthusiasts.</em></p>
 
                 <h3 style="color: #444;">โอกาสทางการขายที่มากกว่า</h3>
                 <p>เราเป็นศูนย์กลางในการเชื่อมต่อ ประกาศขาย-เช่า บ้าน คอนโด และที่ดิน ที่มีระบบการค้นหาแม่นยำ ดึงดูดกลุ่มลูกค้าเป้าหมายที่มีคุณภาพ ช่วยให้ เจ้าของทรัพย์และเอเจนต์ สามารถปิดการขายได้รวดเร็วและมีประสิทธิภาพยิ่งขึ้น</p>

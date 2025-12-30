@@ -33,7 +33,7 @@ export function AdminLayoutClient({ children, user }: AdminLayoutClientProps) {
             `}>
                 <div className="flex items-center justify-between p-6 border-b border-slate-800">
                     <h1 className="text-xl font-bold bg-gradient-to-r from-brand-400 to-white bg-clip-text text-transparent">
-                        PropertyPlus Admin
+                        PropertyOnePlus Admin
                     </h1>
                     <button onClick={() => setIsSidebarOpen(false)} className="lg:hidden text-slate-400 hover:text-white">
                         <X size={24} />

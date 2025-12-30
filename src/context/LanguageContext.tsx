@@ -55,8 +55,8 @@ const translations = {
 
     // Footer
     description: {
-        TH: "PropertyPlus คือตลาดอสังหาริมทรัพย์ชั้นนำของไทย เราช่วยคุณหาบ้าน ที่ดิน และการลงทุนที่ใช่",
-        EN: "PropertyPlus is Thailand's leading property marketplace. We help you find the perfect home, land, or investment property with ease and confidence."
+        TH: "PropertyOnePlus คือตลาดอสังหาริมทรัพย์ชั้นนำของไทย เราช่วยคุณหาบ้าน ที่ดิน และการลงทุนที่ใช่",
+        EN: "PropertyOnePlus is Thailand's leading property marketplace. We help you find the perfect home, land, or investment property with ease and confidence."
     },
     quickLinks: { TH: "เมนูลัด", EN: "Quick Links" },
     searchSale: { TH: "ค้นหาประกาศขาย", EN: "Search for Sale" },

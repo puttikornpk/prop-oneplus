@@ -23,7 +23,8 @@ model User {
   id        String   @id @default(uuid())
   email             String   @unique
   username          String?  @unique
-  password          String
+  facebookId        String?  @unique
+  password          String?
   role              Role     @default(USER)
   status            UserStatus @default(ACTIVE)
   isVerified        Boolean  @default(false)

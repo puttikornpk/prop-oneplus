@@ -48,8 +48,8 @@ export const Footer = () => {
                     <div>
                         <h3 className="text-white font-bold mb-6">{t('contactUs')}</h3>
                         <ul className="space-y-3 text-sm mb-6">
-                            <li>Email: contact@propertyplus.com</li>
-                            <li>Line: @propertyplus</li>
+                            <li>Email: contact@property-oneplus.com</li>
+                            <li>Line: @propertyoneplus</li>
                             <li>Tel: 02-123-4567</li>
                         </ul>
                         <div className="flex gap-4">
@@ -62,7 +62,7 @@ export const Footer = () => {
                 </div>
 
                 <div className="border-t border-slate-800 pt-8 flex flex-col md:flex-row justify-between items-center text-xs text-slate-500">
-                    <p>&copy; 2024 PropertyPlus Co., Ltd. {t('copyright')}</p>
+                    <p>&copy; 2024 PropertyOnePlus Co., Ltd. {t('copyright')}</p>
                     <div className="flex gap-6 mt-4 md:mt-0">
                         <Link href="#" className="hover:text-white transition-colors">{t('privacy')}</Link>
                         <Link href="#" className="hover:text-white transition-colors">{t('terms')}</Link>

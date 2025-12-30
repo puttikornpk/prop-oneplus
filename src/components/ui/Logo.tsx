@@ -42,7 +42,7 @@ export const Logo: React.FC<{ className?: string }> = ({ className }) => {
             {/* Text Branding */}
             <span className="text-2xl font-bold tracking-tight leading-none">
                 <span className="text-[#1e40af]">Property</span>
-                <span className="text-[#3b82f6]">Plus</span>
+                <span className="text-[#3b82f6]">OnePlus</span>
             </span>
         </div>
     );
