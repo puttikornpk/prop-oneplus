@@ -33,10 +33,15 @@ export async function POST(req: Request) {
             );
         }
 
+
         if (!user.isVerified) {
-            // Check if we need to send a new code (e.g., if expired or not present)
-            // For simplicity, always resend or reuse valid code.
-            // Let's generate a new one to be safe and "fresh".
+            // Check if existing code is still valid (prevent double email on first login)
+            if (user.activationCode && user.activationExpires && user.activationExpires > new Date()) {
+                return NextResponse.json({
+                    status: 'ACTIVATION_REQUIRED',
+                    email: user.email
+                });
+            }
 
             const activationCode = Math.floor(100000 + Math.random() * 900000).toString();
             const activationExpires = new Date(Date.now() + 24 * 60 * 60 * 1000);
