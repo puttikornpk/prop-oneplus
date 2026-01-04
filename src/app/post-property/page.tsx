@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import { Logo } from "@/components/ui/Logo";
 import { User, Flag, Settings, Home, Building2, Warehouse, Factory, Store, LandPlot, MapPin, X, Map, Info } from "lucide-react";
 import Link from "next/link";
+import { LocationPickerModal } from "@/components/property/LocationPickerModal";
 
 export default function PostPropertyPage() {
     const { user, isLoading } = useAuth();
@@ -20,6 +21,7 @@ export default function PostPropertyPage() {
     const [propertyCategory, setPropertyCategory] = useState<string>('condo');
     const [address, setAddress] = useState<string>('');
     const [isMapEnabled, setIsMapEnabled] = useState<boolean>(true);
+    const [isLocationModalOpen, setIsLocationModalOpen] = useState(false);
 
     useEffect(() => {
         if (!isLoading && !user) {
@@ -311,7 +313,10 @@ export default function PostPropertyPage() {
 
                                         {/* Edit Map Button Overlay */}
                                         <div className="absolute bottom-4 right-4">
-                                            <button className="flex items-center gap-2 bg-white hover:bg-slate-50 text-brand-600 px-4 py-2 rounded-lg shadow-lg border border-brand-200 text-sm font-medium transition-all transform hover:scale-105">
+                                            <button
+                                                onClick={() => setIsLocationModalOpen(true)}
+                                                className="flex items-center gap-2 bg-white hover:bg-slate-50 text-brand-600 px-4 py-2 rounded-lg shadow-lg border border-brand-200 text-sm font-medium transition-all transform hover:scale-105"
+                                            >
                                                 <div className="w-4 h-4 border-2 border-brand-600 rounded-[4px]"></div>
                                                 แก้ไขตำแหน่งทรัพย์
                                             </button>
@@ -376,6 +381,13 @@ export default function PostPropertyPage() {
                     </div>
                 )}
             </main>
+
+            <LocationPickerModal
+                isOpen={isLocationModalOpen}
+                onClose={() => setIsLocationModalOpen(false)}
+                onConfirm={(newAddress) => setAddress(newAddress)}
+                initialAddress={address}
+            />
         </div>
     );
 }
