@@ -16,7 +16,7 @@ export default function PostPropertyPage() {
     const [currentStep, setCurrentStep] = useState(1);
     const [listingStatus, setListingStatus] = useState<'owner' | 'agent'>('owner');
     const [listingType, setListingType] = useState<string>('sell');
-    const [listingType, setListingType] = useState<string>('sell');
+
     const [propertyCategory, setPropertyCategory] = useState<string>('condo');
     const [address, setAddress] = useState<string>('');
     const [isMapEnabled, setIsMapEnabled] = useState<boolean>(true);
