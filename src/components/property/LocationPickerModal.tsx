@@ -1,7 +1,14 @@
 "use client";
 
 import { X, Search, Map as MapIcon, Satellite, Crosshair, Info } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
+import dynamic from 'next/dynamic';
+
+// Dynamically import LeafletMap to avoid SSR issues
+const InteractiveMap = dynamic(() => import('@/components/property/LeafletMap'), {
+    loading: () => <div className="w-full h-full bg-slate-100 animate-pulse flex items-center justify-center text-slate-400">Loading Map...</div>,
+    ssr: false
+});
 
 interface LocationPickerModalProps {
     isOpen: boolean;
@@ -12,8 +19,10 @@ interface LocationPickerModalProps {
 
 export function LocationPickerModal({ isOpen, onClose, onConfirm, initialAddress }: LocationPickerModalProps) {
     const [searchQuery, setSearchQuery] = useState(initialAddress);
+    const [mapCenter, setMapCenter] = useState<[number, number]>([13.7563, 100.5018]); // Default Bangkok
     const [mapType, setMapType] = useState<'roadmap' | 'satellite'>('roadmap');
     const [isLocating, setIsLocating] = useState(false);
+    const [isDragging, setIsDragging] = useState(false);
 
     useEffect(() => {
         setSearchQuery(initialAddress);
@@ -30,13 +39,39 @@ export function LocationPickerModal({ isOpen, onClose, onConfirm, initialAddress
         setIsLocating(true);
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(
-                (position) => {
-                    // Simulate reverse geocoding or just use a placeholder for now along with coordinates
-                    setSearchQuery(`Lat: ${position.coords.latitude.toFixed(4)}, Long: ${position.coords.longitude.toFixed(4)}`);
-                    setIsLocating(false);
+                async (position) => {
+                    try {
+                        const { latitude, longitude } = position.coords;
+                        // Use OpenStreetMap Nominatim API for reverse geocoding (Free, no key required)
+                        const response = await fetch(
+                            `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&accept-language=th`
+                        );
+                        const data = await response.json();
+
+                        // Update map center directly
+                        const lat = parseFloat(latitude.toFixed(6));
+                        const lng = parseFloat(longitude.toFixed(6));
+                        setMapCenter([lat, lng]);
+
+                        // Also update address text
+                        if (data && data.display_name) {
+                            setSearchQuery(data.display_name);
+                        } else {
+                            setSearchQuery(`${lat}, ${lng}`);
+                        }
+                    } catch (error) {
+                        console.error("Error fetching address:", error);
+                        const lat = position.coords.latitude;
+                        const lng = position.coords.longitude;
+                        setMapCenter([lat, lng]);
+                        setSearchQuery(`${lat.toFixed(6)}, ${lng.toFixed(6)}`);
+                    } finally {
+                        setIsLocating(false);
+                    }
                 },
-                () => {
-                    alert("Unable to retrieve your location");
+                (error) => {
+                    console.error("Geolocation error:", error);
+                    alert("ไม่สามารถระบุตำแหน่งของคุณได้ กรุณาเปิดใช้งาน Location Service");
                     setIsLocating(false);
                 }
             );
@@ -102,18 +137,35 @@ export function LocationPickerModal({ isOpen, onClose, onConfirm, initialAddress
                         </button>
                     </div>
 
-                    {/* Mock Map View */}
+                    {/* Interactive Map View */}
                     <div className="w-full h-full relative bg-[#e5e7eb]">
-                        <iframe
-                            width="100%"
-                            height="100%"
-                            frameBorder="0"
-                            scrolling="no"
-                            marginHeight={0}
-                            marginWidth={0}
-                            src={`https://maps.google.com/maps?q=${encodeURIComponent(searchQuery || 'Bangkok')}&t=${mapType === 'satellite' ? 'k' : 'm'}&z=15&ie=UTF8&iwloc=&output=embed`}
-                            className="w-full h-full opacity-100 pointer-events-none" // Disable pointer events on iframe to simulate drag on container (in real app we'd use API)
-                        ></iframe>
+                        <InteractiveMap
+                            center={mapCenter}
+                            zoom={15}
+                            onCenterChange={async (lat, lng) => {
+                                // Update center state
+                                // setMapCenter([lat, lng]); // Don't strictly force setMapCenter re-render to avoid loop, just fetch address
+
+                                // Simple debounce/throttle could be good here but valid for onMoveEnd
+                                try {
+                                    setIsDragging(true);
+                                    const response = await fetch(
+                                        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&accept-language=th`
+                                    );
+                                    const data = await response.json();
+                                    if (data && data.display_name) {
+                                        setSearchQuery(data.display_name); // Update displayed address while dragging/moving
+                                    } else {
+                                        setSearchQuery(`${lat.toFixed(5)}, ${lng.toFixed(5)}`);
+                                    }
+                                } catch (e) {
+                                    // ignore errors during drag
+                                } finally {
+                                    setIsDragging(false);
+                                }
+                            }}
+                            mapType={mapType}
+                        />
 
                         {/* Center Pin */}
                         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none z-20">
