@@ -60,34 +60,34 @@ export function LocationPickerModal({ isOpen, onClose, onConfirm, initialAddress
                     </button>
                 </div>
 
-                {/* Content */}
-                <div className="flex-1 flex flex-col relative bg-slate-50">
-
-                    {/* Top Controls Overlay */}
-                    <div className="absolute top-4 left-4 right-4 z-10 flex flex-col gap-3">
-                        {/* Search Bar */}
-                        <div className="relative w-full shadow-lg">
-                            <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
-                                <Search size={20} />
-                            </div>
-                            <input
-                                type="text"
-                                value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)}
-                                placeholder="ค้นหาตำแหน่งที่คุณต้องการ"
-                                className="w-full pl-12 pr-4 py-3 rounded-xl border-none shadow-sm focus:ring-2 focus:ring-brand-500 text-slate-700 text-lg"
-                            />
+                {/* Top Controls (Search & Info) - Moved outside map */}
+                <div className="px-6 py-4 bg-white border-b border-slate-100 flex flex-col gap-3 z-20">
+                    {/* Search Bar */}
+                    <div className="relative w-full shadow-sm">
+                        <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
+                            <Search size={20} />
                         </div>
-
-                        {/* Info Banner */}
-                        <div className="bg-blue-50/90 backdrop-blur-sm px-4 py-2 rounded-lg border border-blue-100 text-blue-700 text-sm flex items-center gap-2 shadow-sm w-fit">
-                            <Info size={16} />
-                            <span>ลากเพื่อเคลื่อนย้ายตำแหน่ง สามารถกดพิมพ์เพื่อค้นหาตำแหน่งอสังหาฯของคุณ</span>
-                        </div>
+                        <input
+                            type="text"
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            placeholder="ค้นหาตำแหน่งที่คุณต้องการ"
+                            className="w-full pl-12 pr-4 py-3 rounded-xl border border-slate-200 shadow-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 text-slate-700 text-lg transition-all"
+                        />
                     </div>
 
+                    {/* Info Banner */}
+                    <div className="bg-blue-50 px-4 py-3 rounded-xl border border-blue-100 text-blue-700 text-sm flex items-center gap-2 w-full">
+                        <Info size={18} className="shrink-0" />
+                        <span>ลากเพื่อเคลื่อนย้ายตำแหน่ง สามารถกดพิมพ์เพื่อค้นหาตำแหน่งอสังหาฯของคุณ</span>
+                    </div>
+                </div>
+
+                {/* Map Content */}
+                <div className="flex-1 flex flex-col relative bg-slate-50 overflow-hidden">
+
                     {/* Map Controls */}
-                    <div className="absolute top-24 left-4 z-10 bg-white rounded-lg shadow-md border border-slate-100 p-1 flex">
+                    <div className="absolute top-4 left-4 z-10 bg-white rounded-lg shadow-md border border-slate-100 p-1 flex">
                         <button
                             onClick={() => setMapType('roadmap')}
                             className={`px-4 py-1.5 rounded-md text-sm font-medium transition-colors ${mapType === 'roadmap' ? 'bg-slate-100 text-slate-900' : 'text-slate-500 hover:text-slate-700'}`}
