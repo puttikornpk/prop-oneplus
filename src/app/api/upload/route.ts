@@ -28,6 +28,13 @@ export async function POST(request: Request) {
             process.env.CLOUDINARY_API_SECRET &&
             !process.env.CLOUDINARY_CLOUD_NAME.includes('your_');
 
+        console.log("Upload Debug:", {
+            hasCloudinary,
+            NODE_ENV: process.env.NODE_ENV,
+            CloudName: process.env.CLOUDINARY_CLOUD_NAME ? 'Set' : 'Missing',
+            ApiKey: process.env.CLOUDINARY_API_KEY ? 'Set' : 'Missing'
+        });
+
         if (hasCloudinary) {
             // Upload to Cloudinary
             const result = await new Promise<any>((resolve, reject) => {
