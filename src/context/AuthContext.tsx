@@ -70,6 +70,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const resetTimer = () => {
             if (timeoutId) clearTimeout(timeoutId);
             timeoutId = setTimeout(() => {
+                // 1. Logout immediately
+                localStorage.removeItem('user');
+                localStorage.removeItem('token');
+                setUser(null);
+
+                // 2. Show Modal
                 setIsSessionExpired(true);
             }, INACTIVITY_LIMIT);
         };
@@ -97,8 +103,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }, [user]);
 
     const handleExpiredConfirm = () => {
-        logout();
-        window.location.href = '/';
+        setIsSessionExpired(false);
+        window.location.href = '/login';
     };
 
     return (
