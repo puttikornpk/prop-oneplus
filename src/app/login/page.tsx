@@ -64,6 +64,9 @@ export default function LoginPage() {
                 // Also could store user
                 localStorage.setItem('user', JSON.stringify(data.user));
 
+                // FALLBACK: Manually set cookie for client-side persistence if server header fails
+                document.cookie = `token=${data.token}; path=/; max-age=604800; SameSite=Lax`;
+
                 // Redirect based on Role
                 if (data.user.role === 'ADMIN') {
                     router.push('/admin');
