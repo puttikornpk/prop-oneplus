@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { DashboardSidebar } from "@/components/layout/DashboardSidebar";
 import { MyPropertyCard } from "@/components/property/MyPropertyCard";
+import { PageLoader } from "@/components/ui/PageLoader";
 import { Search, ListFilter, ArrowUpDown, ChevronDown } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { PropertyStatus } from '@prisma/client';
@@ -107,7 +108,7 @@ export default function MyPropertiesPage() {
                 : properties; // Add other filters as needed
 
     if (isLoading || isPropertiesLoading) {
-        return <div className="min-h-screen flex items-center justify-center bg-slate-50">Loading...</div>;
+        return <PageLoader />;
     }
 
     return (

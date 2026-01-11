@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { CheckCircle, XCircle, Loader2 } from 'lucide-react';
 import Link from 'next/link';
+import { PageLoader } from '@/components/ui/PageLoader';
 
 function ActivateContent() {
     const router = useRouter();
@@ -65,11 +66,7 @@ function ActivateContent() {
         <div className="flex flex-col items-center justify-center min-h-screen bg-slate-50 p-4">
             <div className="bg-white p-8 rounded-xl shadow-lg max-w-md w-full text-center">
                 {status === 'loading' && (
-                    <div className="flex flex-col items-center space-y-4">
-                        <Loader2 className="w-16 h-16 text-brand-600 animate-spin" />
-                        <h2 className="text-2xl font-semibold text-slate-800">Verifying...</h2>
-                        <p className="text-slate-500">{message}</p>
-                    </div>
+                    <PageLoader variant="inline" className="py-0" />
                 )}
 
                 {status === 'success' && (
@@ -101,7 +98,7 @@ function ActivateContent() {
 
 export default function ActivatePage() {
     return (
-        <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading...</div>}>
+        <Suspense fallback={<PageLoader />}>
             <ActivateContent />
         </Suspense>
     );

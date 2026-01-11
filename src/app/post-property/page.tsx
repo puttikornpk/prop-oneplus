@@ -8,10 +8,11 @@ import { Logo } from "@/components/ui/Logo";
 import { User, Flag, Settings, Home, Building2, Warehouse, Factory, Store, LandPlot, MapPin, X, Map, Info, UploadCloud, Trash2, Plus, Image as ImageIcon, Layout, Ruler, Hotel, ShoppingCart, Train, School, Hospital, Plane, Zap, Wifi, ArrowLeft, Save, Banknote, Percent, FileText, Wallet, Search, ArrowUp, Bath, BedDouble, ChevronUp, ChevronDown } from "lucide-react";
 import Link from "next/link";
 import { LocationPickerModal } from "@/components/property/LocationPickerModal";
+import { PageLoader } from "@/components/ui/PageLoader";
 
 export default function PostPropertyPage() {
     return (
-        <Suspense fallback={<div>Loading...</div>}>
+        <Suspense fallback={<PageLoader />}>
             <PostPropertyContent />
         </Suspense>
     );
@@ -374,11 +375,7 @@ function PostPropertyContent() {
     };
 
     if (isLoading || !user) {
-        return (
-            <div className="min-h-screen flex items-center justify-center bg-slate-50">
-                <div className="animate-spin w-8 h-8 border-4 border-brand-500 border-t-transparent rounded-full"></div>
-            </div>
-        );
+        return <PageLoader />;
     }
 
     return (

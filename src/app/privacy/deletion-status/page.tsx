@@ -4,6 +4,7 @@ import { useSearchParams } from 'next/navigation';
 import { Shield, CheckCircle } from 'lucide-react';
 import { useLanguage } from '@/context/LanguageContext';
 import { Suspense } from 'react';
+import { PageLoader } from '@/components/ui/PageLoader';
 
 function DeletionStatusContent() {
     const searchParams = useSearchParams();
@@ -46,7 +47,7 @@ function DeletionStatusContent() {
 
 export default function DeletionStatusPage() {
     return (
-        <Suspense fallback={<div>Loading...</div>}>
+        <Suspense fallback={<PageLoader />}>
             <DeletionStatusContent />
         </Suspense>
     );
