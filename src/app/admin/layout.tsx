@@ -13,7 +13,7 @@ export default async function AdminLayout({
     const token = cookieStore.get('token')?.value;
 
     if (!token) {
-        redirect('/');
+        redirect('/?admin_error=no_token');
     }
 
     let session = null;
@@ -24,15 +24,15 @@ export default async function AdminLayout({
         });
     } catch (error) {
         console.error("Admin Layout DB Error:", error);
-        redirect('/'); // Or to an error page
+        redirect('/?admin_error=db_error');
     }
 
     if (!session || session.expiresAt < new Date()) {
-        redirect('/');
+        redirect('/?admin_error=invalid_session');
     }
 
     if (session.user.role !== 'ADMIN') {
-        redirect('/');
+        redirect(`/?admin_error=role_mismatch&role=${session.user.role}`);
     }
 
     return (
