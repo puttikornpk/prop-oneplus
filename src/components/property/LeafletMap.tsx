@@ -1,20 +1,13 @@
 "use client";
 
-import { MapContainer, TileLayer, Marker, useMap, useMapEvents } from 'react-leaflet';
-import L from 'leaflet';
-import 'leaflet/dist/leaflet.css';
-import { useEffect, useState } from 'react';
 
-// Fix for default Leaflet markers in Next.js
-const icon = L.icon({
-    iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
-    iconRetinaUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png",
-    shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
-    iconSize: [25, 41],
-    iconAnchor: [12, 41],
-    popupAnchor: [1, -34],
-    shadowSize: [41, 41]
-});
+import { MapContainer, TileLayer, Marker, useMap, useMapEvents } from 'react-leaflet';
+import { useEffect, useState } from 'react';
+// // import L from 'leaflet'; // Dynamic import instead
+
+// We can't use L.icon at top level because L requires window
+// We'll move custom icon logic to inside component if needed
+
 
 // Component to handle map center updates when props change
 function MapController({ center, onMoveEnd }: { center: [number, number], onMoveEnd: (lat: number, lng: number) => void }) {
@@ -44,6 +37,25 @@ interface InteractiveMapProps {
 }
 
 export default function InteractiveMap({ center, zoom = 15, onCenterChange, mapType = 'roadmap' }: InteractiveMapProps) {
+
+    useEffect(() => {
+        // Initialize Leaflet stuff ensuring window exists
+        (async function initLeaflet() {
+            // @ts-ignore
+            delete L.Icon.Default.prototype._getIconUrl;
+
+            const L = (await import('leaflet')).default;
+            // @ts-ignore
+            await import('leaflet/dist/leaflet.css');
+
+            L.Icon.Default.mergeOptions({
+                iconRetinaUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png",
+                iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
+                shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
+            });
+        })();
+    }, []);
+
     return (
         <MapContainer
             center={center}
