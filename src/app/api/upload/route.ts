@@ -62,8 +62,15 @@ export async function POST(request: Request) {
             const uploadDir = path.join(process.cwd(), 'public/uploads');
             const filepath = path.join(uploadDir, filename);
 
-            await writeFile(filepath, buffer);
-            return NextResponse.json({ success: true, url: `/uploads/${filename}` });
+            try {
+                await writeFile(filepath, buffer);
+                return NextResponse.json({ success: true, url: `/uploads/${filename}` });
+            } catch (writeError: any) {
+                if (writeError.code === 'EROFS') {
+                    throw new Error("File system is read-only (Vercel). You MUST configure CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, and CLOUDINARY_API_SECRET in your Vercel Project Settings.");
+                }
+                throw writeError;
+            }
         }
     } catch (error: any) {
         console.error("Upload error:", error);
