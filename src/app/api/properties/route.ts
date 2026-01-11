@@ -89,28 +89,33 @@ export async function POST(req: Request) {
             }
 
             // 3. Insert Facilities/Highlights
-            const processItems = async (items: string[], type: FacilityType) => {
+            // 3. Insert Facilities/Highlights (Optimized for Transaction Timeout)
+            const processItemsBatched = async (items: string[], type: FacilityType) => {
                 if (!items || items.length === 0) return;
 
-                for (const name of items) {
-                    const facility = await tx.facility.findFirst({
-                        where: { name, type }
-                    });
-
-                    if (facility) {
-                        await tx.propertyFacility.create({
-                            data: {
-                                propertyId: property.id,
-                                facilityId: facility.id
-                            }
-                        });
+                // Batch Fetch
+                const facilities = await tx.facility.findMany({
+                    where: {
+                        name: { in: items },
+                        type: type
                     }
+                });
+
+                // Batch Insert
+                if (facilities.length > 0) {
+                    await tx.propertyFacility.createMany({
+                        data: facilities.map(f => ({
+                            propertyId: property.id,
+                            facilityId: f.id
+                        })),
+                        skipDuplicates: true
+                    });
                 }
             };
 
-            await processItems(data.highlights, FacilityType.HIGHLIGHT);
-            await processItems(data.facilities, FacilityType.FACILITY);
-            await processItems(data.nearbyPlaces, FacilityType.NEARBY);
+            await processItemsBatched(data.highlights, FacilityType.HIGHLIGHT);
+            await processItemsBatched(data.facilities, FacilityType.FACILITY);
+            await processItemsBatched(data.nearbyPlaces, FacilityType.NEARBY);
 
             return property;
         });
