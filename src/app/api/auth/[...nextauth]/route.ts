@@ -1,29 +1,9 @@
 
 import NextAuth from "next-auth";
-import FacebookProvider from "next-auth/providers/facebook";
+import { authOptions } from "@/lib/auth";
 
-const handler = NextAuth({
-    providers: [
-        FacebookProvider({
-            clientId: process.env.FACEBOOK_CLIENT_ID || "",
-            clientSecret: process.env.FACEBOOK_CLIENT_SECRET || "",
-        }),
-    ],
-    session: {
-        strategy: "jwt",
-    },
-    callbacks: {
-        async jwt({ token, account }) {
-            if (account) {
-                token.accessToken = account.access_token;
-            }
-            return token;
-        },
-        async session({ session, token }: { session: any; token: any }) {
-            session.accessToken = token.accessToken;
-            return session;
-        },
-    },
-});
+const handler = NextAuth(authOptions);
+
+console.error("[Auth_Debug] NextAuth Route Handler Loaded");
 
 export { handler as GET, handler as POST };

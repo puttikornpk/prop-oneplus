@@ -4,12 +4,8 @@ const prisma = new PrismaClient();
 
 async function checkUser() {
     try {
-        const user = await prisma.user.findFirst({
-            where: {
-                username: {
-                    startsWith: 'testuser_'
-                }
-            },
+        const users = await prisma.user.findMany({
+            take: 10,
             orderBy: {
                 createdAt: 'desc'
             },
@@ -18,13 +14,17 @@ async function checkUser() {
             }
         });
 
-        if (user) {
-            console.log('User found:', user.email);
-            console.log('Username:', user.username);
-            console.log('Activation Code:', user.activationCode);
-            console.log('Is Verified:', user.isVerified);
+        if (users.length > 0) {
+            console.log('Found users:', users.length);
+            users.forEach(user => {
+                console.log('--------------------------------');
+                console.log('Email:', user.email);
+                console.log('Username:', user.username);
+                console.log('Phone:', user.profile?.phone);
+                console.log('Role:', user.role);
+            });
         } else {
-            console.log('No test user found.');
+            console.log('No users found in database.');
         }
     } catch (e) {
         console.error(e);

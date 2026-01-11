@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
-import { Mail, Phone, User, Lock, Facebook, X } from "lucide-react";
+import { Mail, Phone, User, Lock, Facebook, X, Eye, EyeOff } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 
 // Mock Google Icon 
@@ -30,6 +30,8 @@ export function RegisterModal({ isOpen, onClose, onSwitchToLogin }: RegisterModa
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState("");
     const [isTermsOpen, setIsTermsOpen] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [formData, setFormData] = useState({
         email: "",
         phone: "",
@@ -206,14 +208,21 @@ export function RegisterModal({ isOpen, onClose, onSwitchToLogin }: RegisterModa
                             <div className="relative">
                                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
                                 <input
-                                    type="password"
+                                    type={showPassword ? "text" : "password"}
                                     name="password"
                                     value={formData.password}
                                     onChange={handleChange}
-                                    className="w-full pl-10 pr-4 py-3 bg-brand-50/50 border border-brand-200 rounded-lg focus:outline-none focus:border-brand-500 text-slate-700"
+                                    className="w-full pl-10 pr-10 py-3 bg-brand-50/50 border border-brand-200 rounded-lg focus:outline-none focus:border-brand-500 text-slate-700"
                                     placeholder={t('registerPasswordPlaceholder')}
                                     required
                                 />
+                                <button
+                                    type="button"
+                                    onClick={() => setShowPassword(!showPassword)}
+                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                                >
+                                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                                </button>
                             </div>
                         </div>
 
@@ -223,14 +232,21 @@ export function RegisterModal({ isOpen, onClose, onSwitchToLogin }: RegisterModa
                             <div className="relative">
                                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
                                 <input
-                                    type="password"
+                                    type={showConfirmPassword ? "text" : "password"}
                                     name="confirmPassword"
                                     value={formData.confirmPassword}
                                     onChange={handleChange}
-                                    className="w-full pl-10 pr-4 py-3 bg-brand-50/50 border border-brand-200 rounded-lg focus:outline-none focus:border-brand-500 text-slate-700"
+                                    className="w-full pl-10 pr-10 py-3 bg-brand-50/50 border border-brand-200 rounded-lg focus:outline-none focus:border-brand-500 text-slate-700"
                                     placeholder={t('registerPasswordPlaceholder')}
                                     required
                                 />
+                                <button
+                                    type="button"
+                                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                                >
+                                    {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                                </button>
                             </div>
                         </div>
 

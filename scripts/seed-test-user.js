@@ -1,32 +1,36 @@
 const { PrismaClient } = require('@prisma/client');
+const bcrypt = require('bcryptjs'); // Import bcrypt
 const prisma = new PrismaClient();
 
 async function createTestUser() {
-    const userId = "1234567890_TEST_USER";
-    const email = "test_deletion@example.com";
+    const userId = "admin2";
+    const email = "puttikorn@live.com";
+    const passwordRaw = "p123";
+    const hashedPassword = await bcrypt.hash(passwordRaw, 12);
 
     try {
         // Clean up first
-        await prisma.user.deleteMany({
-            where: {
-                OR: [
-                    { facebookId: userId },
-                    { email: email }
-                ]
-            }
-        });
+        // await prisma.user.deleteMany({
+        //     where: {
+        //         OR: [
+        //             { facebookId: userId },
+        //             { email: email }
+        //         ]
+        //     }
+        // });
 
         const user = await prisma.user.create({
             data: {
                 email: email,
-                username: "test_deletion_user",
-                facebookId: userId,
+                username: userId,
+                //facebookId: userId,
+                role: "ADMIN",
                 status: 'ACTIVE',
-                password: 'dummy_password', // Providing dummy password if required logic checks it, though schema allows null
+                password: hashedPassword,
                 profile: {
                     create: {
-                        firstName: "Deletion",
-                        lastName: "Test",
+                        firstName: "Admin",
+                        lastName: "Super",
                     }
                 }
             }

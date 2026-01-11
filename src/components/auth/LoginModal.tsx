@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
-import { User, Lock, Facebook, ArrowRight, LogIn, X, Shield } from "lucide-react";
+import { User, Lock, Facebook, ArrowRight, LogIn, X, Shield, Eye, EyeOff } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { useLanguage } from "@/context/LanguageContext";
 import { createPortal } from "react-dom";
@@ -33,6 +33,7 @@ export function LoginModal({ isOpen, onClose, onSwitchToRegister }: LoginModalPr
     const [identifier, setIdentifier] = useState("");
     const [password, setPassword] = useState("");
     const [activationCode, setActivationCode] = useState("");
+    const [showPassword, setShowPassword] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState("");
     const [mounted, setMounted] = useState(false);
@@ -48,6 +49,7 @@ export function LoginModal({ isOpen, onClose, onSwitchToRegister }: LoginModalPr
             setIdentifier("");
             setPassword("");
             setActivationCode("");
+            setShowPassword(false);
             setError("");
         }
     }, [isOpen]);
@@ -105,28 +107,46 @@ export function LoginModal({ isOpen, onClose, onSwitchToRegister }: LoginModalPr
             return;
         }
 
+
         setIsLoading(true);
         try {
-            const res = await fetch('/api/auth/login', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ identifier, password })
+            const result = await signIn("credentials", {
+                redirect: false,
+                identifier,
+                password,
             });
 
-            if (!res.ok) {
-                const data = await res.json();
-                throw new Error(data.error || 'Login failed');
+            if (result?.error) {
+                throw new Error(result.error);
             }
 
-            const data = await res.json();
-            login(data.user, data.token);
-            onClose();
-            if (data.user.role === 'ADMIN') {
-                router.push('/admin');
+            // Fetch session/user details to update context (optional if session Provider used)
+            // But we have a 'login' context function. 
+            // Better to let SessionProvider handle IT? 
+            // The existing code manually calls `login(user, token)`.
+            // While Refactoring to NextAuth, we usually wrap app in SessionProvider.
+            // But for now, let's keep the manual context update if we can fetch user?
+            // Actually, `signIn` doesn't return user object directly in client.
+            // We might need to fetch /api/auth/session or reload.
+            // SIMPLEST FIX: Just reload page or let UseSession hook pick it up?
+            // User code expects `login` function.
+            // Let's call /api/auth/session to get user info after sign in.
+
+            const sessionRes = await fetch('/api/auth/session');
+            const sessionData = await sessionRes.json();
+
+            if (sessionData?.user) {
+                // Map NextAuth session user to Context User format if needed?
+                // Or just pass sessionData.user and token (accessToken).
+                login(sessionData.user, sessionData.accessToken);
+                onClose();
+                if (sessionData.user.role === 'ADMIN' || sessionData.user.role === 'admin') {
+                    router.push('/admin');
+                }
             }
 
         } catch (err: any) {
-            setError(err.message);
+            setError(err.message || "Login failed");
         } finally {
             setIsLoading(false);
         }
@@ -250,13 +270,20 @@ export function LoginModal({ isOpen, onClose, onSwitchToRegister }: LoginModalPr
                                     <div className="relative">
                                         <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={20} />
                                         <input
-                                            type="password"
+                                            type={showPassword ? "text" : "password"}
                                             value={password}
                                             onChange={(e) => setPassword(e.target.value)}
-                                            className="w-full pl-12 pr-4 py-3 bg-white border border-slate-300 rounded-xl focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500/20 text-slate-700 placeholder-slate-400 transition-all"
+                                            className="w-full pl-12 pr-12 py-3 bg-white border border-slate-300 rounded-xl focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500/20 text-slate-700 placeholder-slate-400 transition-all"
                                             placeholder={t('passwordPlaceholder')}
                                             autoFocus
                                         />
+                                        <button
+                                            type="button"
+                                            onClick={() => setShowPassword(!showPassword)}
+                                            className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 focus:outline-none"
+                                        >
+                                            {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                                        </button>
                                     </div>
                                 )}
 

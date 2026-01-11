@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Mail, Phone, User, Lock, Facebook } from "lucide-react";
+import { Mail, Phone, User, Lock, Facebook, Eye, EyeOff } from "lucide-react";
 
 // Mock Google Icon 
 const GoogleIcon = () => (
@@ -20,6 +20,8 @@ export default function RegisterPage() {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState("");
     const [isTermsOpen, setIsTermsOpen] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [formData, setFormData] = useState({
         email: "puttikorn@live.com", // Default from image
         phone: "0889443425",
@@ -181,14 +183,21 @@ export default function RegisterPage() {
                         <div className="relative">
                             <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
                             <input
-                                type="password"
+                                type={showPassword ? "text" : "password"}
                                 name="password"
                                 value={formData.password}
                                 onChange={handleChange}
-                                className="w-full pl-10 pr-4 py-3 bg-brand-50/50 border border-brand-200 rounded-lg focus:outline-none focus:border-brand-500 text-slate-700 text-2xl tracking-widest"
+                                className="w-full pl-10 pr-10 py-3 bg-brand-50/50 border border-brand-200 rounded-lg focus:outline-none focus:border-brand-500 text-slate-700 text-2xl tracking-widest"
                                 placeholder="•••••••"
                                 required
                             />
+                            <button
+                                type="button"
+                                onClick={() => setShowPassword(!showPassword)}
+                                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                            >
+                                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                            </button>
                         </div>
                     </div>
 
@@ -198,14 +207,21 @@ export default function RegisterPage() {
                         <div className="relative">
                             <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
                             <input
-                                type="password"
+                                type={showConfirmPassword ? "text" : "password"}
                                 name="confirmPassword"
                                 value={formData.confirmPassword}
                                 onChange={handleChange}
-                                className="w-full pl-10 pr-4 py-3 bg-brand-50/50 border border-brand-200 rounded-lg focus:outline-none focus:border-brand-500 text-slate-700 text-2xl tracking-widest"
+                                className="w-full pl-10 pr-10 py-3 bg-brand-50/50 border border-brand-200 rounded-lg focus:outline-none focus:border-brand-500 text-slate-700 text-2xl tracking-widest"
                                 placeholder="•••••••"
                                 required
                             />
+                            <button
+                                type="button"
+                                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                            >
+                                {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                            </button>
                         </div>
                     </div>
 

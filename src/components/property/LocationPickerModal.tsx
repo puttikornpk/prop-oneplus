@@ -1,14 +1,8 @@
-"use client";
+const libraries: ("places" | "geometry")[] = ["places", "geometry"];
 
-import { X, Search, Map as MapIcon, Satellite, Crosshair, Info } from "lucide-react";
-import { useState, useEffect, useMemo } from "react";
-import dynamic from 'next/dynamic';
-
-// Dynamically import LeafletMap to avoid SSR issues
-const InteractiveMap = dynamic(() => import('@/components/property/LeafletMap'), {
-    loading: () => <div className="w-full h-full bg-slate-100 animate-pulse flex items-center justify-center text-slate-400">Loading Map...</div>,
-    ssr: false
-});
+import { GoogleMap, useJsApiLoader, Marker, Autocomplete } from '@react-google-maps/api';
+import { useCallback, useRef, useState, useEffect } from "react";
+import { X, Search, Info, Crosshair } from "lucide-react";
 
 interface LocationPickerModalProps {
     isOpen: boolean;
@@ -19,59 +13,104 @@ interface LocationPickerModalProps {
 
 export function LocationPickerModal({ isOpen, onClose, onConfirm, initialAddress }: LocationPickerModalProps) {
     const [searchQuery, setSearchQuery] = useState(initialAddress);
-    const [mapCenter, setMapCenter] = useState<[number, number]>([13.7563, 100.5018]); // Default Bangkok
+    const [mapCenter, setMapCenter] = useState<{ lat: number; lng: number }>({ lat: 13.7563, lng: 100.5018 }); // Bangkok
     const [mapType, setMapType] = useState<'roadmap' | 'satellite'>('roadmap');
     const [isLocating, setIsLocating] = useState(false);
-    const [isDragging, setIsDragging] = useState(false);
+
+    const mapRef = useRef<google.maps.Map | null>(null);
+    const autocompleteRef = useRef<google.maps.places.Autocomplete | null>(null);
+    const geocoderRef = useRef<google.maps.Geocoder | null>(null);
+
+    const { isLoaded } = useJsApiLoader({
+        id: 'google-map-script',
+        googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "",
+        libraries: libraries
+    });
 
     useEffect(() => {
         setSearchQuery(initialAddress);
     }, [initialAddress, isOpen]);
 
-    if (!isOpen) return null;
+    // Initialize geocoder when map is loaded
+    useEffect(() => {
+        if (isLoaded && !geocoderRef.current) {
+            geocoderRef.current = new google.maps.Geocoder();
+        }
+    }, [isLoaded]);
+
+    const onLoad = useCallback((map: google.maps.Map) => {
+        mapRef.current = map;
+    }, []);
+
+    const onUnmount = useCallback(() => {
+        mapRef.current = null;
+    }, []);
+
+    const onAutocompleteLoad = (autocomplete: google.maps.places.Autocomplete) => {
+        autocompleteRef.current = autocomplete;
+    };
+
+    const onPlaceChanged = () => {
+        if (autocompleteRef.current) {
+            const place = autocompleteRef.current.getPlace();
+            if (place.geometry && place.geometry.location) {
+                const lat = place.geometry.location.lat();
+                const lng = place.geometry.location.lng();
+                setMapCenter({ lat, lng });
+                mapRef.current?.panTo({ lat, lng });
+                mapRef.current?.setZoom(17);
+
+                if (place.formatted_address) {
+                    setSearchQuery(place.formatted_address);
+                }
+            } else {
+                console.log("No details available for input: '" + place.name + "'");
+            }
+        }
+    };
 
     const handleConfirm = () => {
         onConfirm(searchQuery);
         onClose();
     };
 
+    const reverseGeocode = (lat: number, lng: number) => {
+        if (geocoderRef.current) {
+            geocoderRef.current.geocode({ location: { lat, lng } }, (results, status) => {
+                if (status === "OK" && results && results[0]) {
+                    setSearchQuery(results[0].formatted_address);
+                } else {
+                    console.error("Geocoder failed due to: " + status);
+                    setSearchQuery(`${lat.toFixed(6)}, ${lng.toFixed(6)}`);
+                }
+            });
+        }
+    };
+
+    const onMarkerDragEnd = (e: google.maps.MapMouseEvent) => {
+        if (e.latLng) {
+            const lat = e.latLng.lat();
+            const lng = e.latLng.lng();
+            setMapCenter({ lat, lng });
+            reverseGeocode(lat, lng);
+        }
+    };
+
     const handleCurrentLocation = () => {
         setIsLocating(true);
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(
-                async (position) => {
-                    try {
-                        const { latitude, longitude } = position.coords;
-                        // Use OpenStreetMap Nominatim API for reverse geocoding (Free, no key required)
-                        const response = await fetch(
-                            `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&accept-language=th`
-                        );
-                        const data = await response.json();
-
-                        // Update map center directly
-                        const lat = parseFloat(latitude.toFixed(6));
-                        const lng = parseFloat(longitude.toFixed(6));
-                        setMapCenter([lat, lng]);
-
-                        // Also update address text
-                        if (data && data.display_name) {
-                            setSearchQuery(data.display_name);
-                        } else {
-                            setSearchQuery(`${lat}, ${lng}`);
-                        }
-                    } catch (error) {
-                        console.error("Error fetching address:", error);
-                        const lat = position.coords.latitude;
-                        const lng = position.coords.longitude;
-                        setMapCenter([lat, lng]);
-                        setSearchQuery(`${lat.toFixed(6)}, ${lng.toFixed(6)}`);
-                    } finally {
-                        setIsLocating(false);
-                    }
+                (position) => {
+                    const { latitude, longitude } = position.coords;
+                    const newCenter = { lat: latitude, lng: longitude };
+                    setMapCenter(newCenter);
+                    mapRef.current?.panTo(newCenter);
+                    mapRef.current?.setZoom(17);
+                    reverseGeocode(latitude, longitude);
+                    setIsLocating(false);
                 },
-                (error) => {
-                    console.error("Geolocation error:", error);
-                    alert("ไม่สามารถระบุตำแหน่งของคุณได้ กรุณาเปิดใช้งาน Location Service");
+                () => {
+                    alert("Unable to retrieve your location");
                     setIsLocating(false);
                 }
             );
@@ -80,6 +119,8 @@ export function LocationPickerModal({ isOpen, onClose, onConfirm, initialAddress
             setIsLocating(false);
         }
     };
+
+    if (!isOpen) return null;
 
     return (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 animate-in fade-in duration-200">
@@ -98,23 +139,39 @@ export function LocationPickerModal({ isOpen, onClose, onConfirm, initialAddress
                 {/* Top Controls (Search & Info) - Moved outside map */}
                 <div className="px-6 py-4 bg-white border-b border-slate-100 flex flex-col gap-3 z-20">
                     {/* Search Bar */}
-                    <div className="relative w-full shadow-sm">
-                        <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
-                            <Search size={20} />
-                        </div>
-                        <input
-                            type="text"
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                            placeholder="ค้นหาตำแหน่งที่คุณต้องการ"
-                            className="w-full pl-12 pr-4 py-3 rounded-xl border border-slate-200 shadow-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 text-slate-700 text-lg transition-all"
-                        />
+                    <div className="relative w-full shadow-sm z-50"> {/* High z-index for Autocomplete dropdown */}
+                        {isLoaded ? (
+                            <Autocomplete
+                                onLoad={onAutocompleteLoad}
+                                onPlaceChanged={onPlaceChanged}
+                            >
+                                <div className="relative">
+                                    <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
+                                        <Search size={20} />
+                                    </div>
+                                    <input
+                                        type="text"
+                                        value={searchQuery}
+                                        onChange={(e) => setSearchQuery(e.target.value)}
+                                        placeholder="ค้นหาตำแหน่งที่คุณต้องการ"
+                                        className="w-full pl-12 pr-4 py-3 rounded-xl border border-slate-200 shadow-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 text-slate-700 text-lg transition-all"
+                                    />
+                                </div>
+                            </Autocomplete>
+                        ) : (
+                            <div className="relative">
+                                <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
+                                    <Search size={20} />
+                                </div>
+                                <input disabled placeholder="Loading Maps..." className="w-full pl-12 pr-4 py-3 rounded-xl border border-slate-200 bg-slate-50" />
+                            </div>
+                        )}
                     </div>
 
                     {/* Info Banner */}
                     <div className="bg-blue-50 px-4 py-3 rounded-xl border border-blue-100 text-blue-700 text-sm flex items-center gap-2 w-full">
                         <Info size={18} className="shrink-0" />
-                        <span>ลากเพื่อเคลื่อนย้ายตำแหน่ง สามารถกดพิมพ์เพื่อค้นหาตำแหน่งอสังหาฯของคุณ</span>
+                        <span>ลากหมุดสีแดงเพื่อระบุตำแหน่งที่แม่นยำ ระบบจะค้นหาที่อยู่อัตโนมัติ</span>
                     </div>
                 </div>
 
@@ -139,60 +196,36 @@ export function LocationPickerModal({ isOpen, onClose, onConfirm, initialAddress
 
                     {/* Interactive Map View */}
                     <div className="w-full h-full relative bg-[#e5e7eb]">
-                        <InteractiveMap
-                            center={mapCenter}
-                            zoom={15}
-                            onCenterChange={async (lat, lng) => {
-                                // Update center state
-                                // setMapCenter([lat, lng]); // Don't strictly force setMapCenter re-render to avoid loop, just fetch address
-
-                                // Simple debounce/throttle could be good here but valid for onMoveEnd
-                                try {
-                                    setIsDragging(true);
-                                    const response = await fetch(
-                                        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&accept-language=th`
-                                    );
-                                    const data = await response.json();
-                                    if (data && data.display_name) {
-                                        setSearchQuery(data.display_name); // Update displayed address while dragging/moving
-                                    } else {
-                                        setSearchQuery(`${lat.toFixed(5)}, ${lng.toFixed(5)}`);
-                                    }
-                                } catch (e) {
-                                    // ignore errors during drag
-                                } finally {
-                                    setIsDragging(false);
-                                }
-                            }}
-                            mapType={mapType}
-                        />
-
-                        {/* Center Pin */}
-                        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none z-20">
-                            {/* Address Bubble */}
-                            <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-4 bg-white px-4 py-3 rounded-xl shadow-xl w-64 text-center">
-                                <p className="text-xs text-slate-500 mb-1">ตำแหน่งที่เลือก</p>
-                                <p className="text-sm font-medium text-slate-800 line-clamp-2 leading-relaxed">
-                                    {searchQuery || "กรุงเทพมหานคร"}
-                                </p>
-                                {/* Triangle arrow */}
-                                <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-white transform rotate-45"></div>
-                            </div>
-
-                            {/* Pin Icon */}
-                            <div className="relative">
-                                <div className="w-10 h-10 bg-red-500 rounded-full border-[3px] border-white shadow-lg flex items-center justify-center animate-bounce">
-                                    <div className="w-3 h-3 bg-white rounded-full"></div>
-                                </div>
-                                <div className="w-0 h-0 border-l-[8px] border-l-transparent border-r-[8px] border-r-transparent border-t-[10px] border-t-red-500 absolute -bottom-1.5 left-1/2 -translate-x-1/2"></div>
-                                <div className="absolute top-full mt-1 left-1/2 -translate-x-1/2 w-4 h-1.5 bg-black/20 rounded-full blur-[1px]"></div>
-                            </div>
-                        </div>
+                        {isLoaded ? (
+                            <GoogleMap
+                                mapContainerStyle={{ width: '100%', height: '100%' }}
+                                center={mapCenter}
+                                zoom={15}
+                                onLoad={onLoad}
+                                onUnmount={onUnmount}
+                                mapTypeId={mapType}
+                                options={{
+                                    mapTypeControl: false,
+                                    streetViewControl: false,
+                                    fullscreenControl: false,
+                                }}
+                            >
+                                {/* Draggable Marker */}
+                                <Marker
+                                    position={mapCenter}
+                                    draggable={true}
+                                    onDragEnd={onMarkerDragEnd}
+                                    animation={google.maps.Animation.DROP}
+                                />
+                            </GoogleMap>
+                        ) : (
+                            <div className="w-full h-full flex items-center justify-center text-slate-400">Loading Map...</div>
+                        )}
 
                         {/* Current Location Button */}
                         <button
                             onClick={handleCurrentLocation}
-                            className="absolute bottom-24 right-4 bg-white hover:bg-slate-50 text-slate-700 px-4 py-2.5 rounded-xl shadow-lg border border-slate-200 text-sm font-medium transition-all flex items-center gap-2"
+                            className="absolute bottom-8 right-4 z-10 bg-white hover:bg-slate-50 text-slate-700 px-4 py-2.5 rounded-xl shadow-lg border border-slate-200 text-sm font-medium transition-all flex items-center gap-2"
                         >
                             {isLocating ? (
                                 <div className="w-4 h-4 border-2 border-brand-500 border-t-transparent rounded-full animate-spin"></div>
@@ -202,7 +235,6 @@ export function LocationPickerModal({ isOpen, onClose, onConfirm, initialAddress
                             ใช้ตำแหน่งปัจจุบัน
                         </button>
                     </div>
-
                 </div>
 
                 {/* Footer Actions */}

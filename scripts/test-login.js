@@ -1,5 +1,5 @@
-const identifier = "puttikorn";
-const password = "p1234"; // Replace with actual password
+const identifier = "test_deletion_user";
+const password = "password123"; // Replace with actual password
 
 async function testLogin() {
     try {

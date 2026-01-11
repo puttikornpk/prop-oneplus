@@ -7,7 +7,7 @@ async function testFlow() {
     const baseUrl = 'http://localhost:3000/api/auth';
     const timestamp = Math.floor(Date.now() / 1000);
     const username = `flowuser_${timestamp}`;
-    const email = `flow_${timestamp}@example.com`;
+    const email = `flow_${timestamp}@live.com`;
     const password = 'password123';
 
     console.log(`Testing flow for: ${username}`);

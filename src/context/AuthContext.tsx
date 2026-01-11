@@ -1,6 +1,7 @@
 "use client";
 
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { SessionExpiredModal } from '@/components/auth/SessionExpiredModal';
 
 interface User {
     id: string;
@@ -54,11 +55,59 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setUser(null);
         localStorage.removeItem('user');
         localStorage.removeItem('token');
+        setIsSessionExpired(false);
+    };
+
+    // Session Timeout Logic
+    const [isSessionExpired, setIsSessionExpired] = useState(false);
+    const INACTIVITY_LIMIT = 15 * 60 * 1000; // 15 minutes
+
+    useEffect(() => {
+        if (!user) return;
+
+        let timeoutId: NodeJS.Timeout;
+
+        const resetTimer = () => {
+            if (timeoutId) clearTimeout(timeoutId);
+            timeoutId = setTimeout(() => {
+                setIsSessionExpired(true);
+            }, INACTIVITY_LIMIT);
+        };
+
+        const handleActivity = () => {
+            resetTimer();
+        };
+
+        // Listeners
+        window.addEventListener('mousemove', handleActivity);
+        window.addEventListener('keydown', handleActivity);
+        window.addEventListener('click', handleActivity);
+        window.addEventListener('scroll', handleActivity);
+
+        // Init
+        resetTimer();
+
+        return () => {
+            if (timeoutId) clearTimeout(timeoutId);
+            window.removeEventListener('mousemove', handleActivity);
+            window.removeEventListener('keydown', handleActivity);
+            window.removeEventListener('click', handleActivity);
+            window.removeEventListener('scroll', handleActivity);
+        };
+    }, [user]);
+
+    const handleExpiredConfirm = () => {
+        logout();
+        window.location.href = '/';
     };
 
     return (
         <AuthContext.Provider value={{ user, login, logout, isLoading }}>
             {children}
+            <SessionExpiredModal
+                isOpen={isSessionExpired}
+                onConfirm={handleExpiredConfirm}
+            />
         </AuthContext.Provider>
     );
 }

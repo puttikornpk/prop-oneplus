@@ -35,6 +35,8 @@ model User {
   
   profile   Profile?
   sessions  Session[]
+  properties Property[]
+  auditLogs  AuditLog[]
 }
 
 model Profile {
@@ -57,4 +59,157 @@ model Session {
   createdAt DateTime @default(now())
   
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// --- Property System ---
+
+enum ListingStatus {
+  OWNER
+  AGENT
+}
+
+enum ListingType {
+  SELL
+  RENT
+  SELL_RENT
+  LEASE
+  DOWN_PAYMENT
+}
+
+enum PropertyCategory {
+  CONDO
+  APARTMENT
+  HOUSE
+  TWIN_HOUSE
+  TOWNHOME
+  HOME_OFFICE
+  LAND
+  POOL_VILLA
+  CO_WORKING
+  SHOP
+  COMMERCIAL
+  OFFICE
+  FACTORY
+  SHOWROOM
+  WAREHOUSE
+  HOTEL
+}
+
+enum PropertyStatus {
+  ACTIVE
+  SOLD
+  ARCHIVED
+  DRAFT
+}
+
+enum CommissionType {
+  PERCENT
+  FIXED
+  AGREED
+}
+
+enum FacilityType {
+  FACILITY
+  HIGHLIGHT
+  NEARBY
+}
+
+model Property {
+  id          String   @id @default(uuid())
+  ownerId     String
+  
+  // Basic Info
+  listingStatus ListingStatus @default(OWNER)
+  topic         String   @db.VarChar(100)
+  description   String   @db.Text
+  listingType   ListingType
+  category      PropertyCategory
+  status        PropertyStatus @default(ACTIVE)
+  
+  // Pricing & Commission
+  price          Decimal  @db.Decimal(18, 2)
+  commissionType CommissionType?
+  commissionRate Decimal? @db.Decimal(10, 2)
+  note           String?  @db.Text
+  noteTopic      String?  @db.VarChar(100)
+  noteImages     Json?    // Stores array of image URLs specific to the note
+  
+  // Location
+  address     String
+  province    String?
+  district    String?
+  subDistrict String?
+  latitude    Float?
+  longitude   Float?
+  
+  // Size Details
+  landRai     Int      @default(0)
+  landNgan    Int      @default(0)
+  landSqWah   Decimal  @default(0) @db.Decimal(5, 2)
+  usableArea  Decimal? @db.Decimal(10, 2)
+  
+  bedroom     Int?     @default(0)
+  bathroom    Int?     @default(0)
+  floors      Int?     @default(0)
+  
+  // Metadata
+  version     Int      @default(0) // For Optimistic Locking
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  owner       User     @relation(fields: [ownerId], references: [id], onDelete: Restrict)
+  images      PropertyImage[]
+  facilities  PropertyFacility[]
+
+  @@index([listingType, category, status])
+  @@index([price])
+  @@index([createdAt])
+  @@index([province])
+  @@index([district])
+}
+
+model PropertyImage {
+  id         String   @id @default(uuid())
+  propertyId String
+  url        String
+  orderIndex Int      @default(0)
+
+  property   Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  @@index([propertyId])
+}
+
+model Facility {
+  id   String       @id @default(uuid())
+  name String       // e.g., "Pool", "Gym", "Near BTS"
+  type FacilityType @default(FACILITY)
+
+  properties PropertyFacility[]
+  
+  @@unique([name, type])
+}
+
+model PropertyFacility {
+  propertyId String
+  facilityId String
+
+  property   Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  facility   Facility @relation(fields: [facilityId], references: [id], onDelete: Cascade)
+
+  @@id([propertyId, facilityId])
+}
+
+// --- Security & Audit ---
+
+model AuditLog {
+  id         String   @id @default(uuid())
+  entityName String   // e.g. "Property"
+  entityId   String
+  action     String   // INSERT, UPDATE, DELETE
+  changedBy  String?  // Nullable in case system action or deleted user (though user deletion is restricted)
+  changes    Json?    
+  createdAt  DateTime @default(now())
+
+  user       User?    @relation(fields: [changedBy], references: [id])
 }

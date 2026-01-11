@@ -41,15 +41,17 @@ export async function POST(req: Request) {
             }
         }
 
+
         // Create User
+        console.log("[Register_Debug] Hashing password...");
         const hashedPassword = await hashPassword(password);
+        console.log("[Register_Debug] Password hashed.");
 
         // Generate Activation Code (6 digits)
         const activationCode = Math.floor(100000 + Math.random() * 900000).toString();
         const activationExpires = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
 
-        // console.log("MOCK EMAIL SENT TO " + email + " WITH CODE: " + activationCode);
-
+        console.log("[Register_Debug] Creating user in DB...");
         const user = await prisma.user.create({
             data: {
                 email,
@@ -70,8 +72,10 @@ export async function POST(req: Request) {
                 profile: true
             }
         });
+        console.log("[Register_Debug] User created: " + user.id);
 
         // Send Email
+        console.log("[Register_Debug] Sending email...");
         await sendVerificationEmail(email, username, activationCode);
         console.log(`[DEV-Log] Verification Code for ${email}: ${activationCode}`);
 
@@ -80,9 +84,9 @@ export async function POST(req: Request) {
         return NextResponse.json(userWithoutPassword, { status: 201 });
 
     } catch (error) {
-        console.error("Registration error:", error);
+        console.error("Registration error FULL:", error);
         return NextResponse.json(
-            { error: "Internal server error" },
+            { error: "Internal server error: " + (error instanceof Error ? error.message : String(error)) },
             { status: 500 }
         );
     }

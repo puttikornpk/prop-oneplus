@@ -16,6 +16,7 @@ export async function POST(req: Request) {
 
         // Search for user by email, phone, or firstName (username)
         // Note: Prisma OR with nested relations (profile)
+        console.error("[Login_API_Debug] Lookup user with:", identifier);
         const user = await prisma.user.findFirst({
             where: {
                 OR: [
@@ -28,6 +29,8 @@ export async function POST(req: Request) {
                 profile: true
             }
         });
+
+        console.error("[Login_API_Debug] User found:", user ? user.id : "NO USER");
 
         if (!user) {
             return NextResponse.json(
