@@ -208,6 +208,7 @@ export const translations = {
     dragDropText: { TH: "ลากไฟล์มาวางที่นี่ หรือ", EN: "Drag & Drop files here or" },
     clickToSelect: { TH: "กดเพื่อเลือกรูปภาพ", EN: "click to select" },
     mainImage: { TH: "รูปหลัก", EN: "Main Image" },
+    uploadLimitInfo: { TH: "อัปโหลดได้สูงสุด 20 รูป", EN: "Upload up to 20 images" },
 
     // Step 3: Details
     topicLabel: { TH: "หัวข้อประกาศ", EN: "Title" },
