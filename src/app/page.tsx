@@ -4,22 +4,28 @@ import { HomeClient } from "./home-client";
 export const dynamic = 'force-dynamic';
 
 export default async function Home() {
-  const properties = await prisma.property.findMany({
-    where: {
-      status: 'ACTIVE'
-    },
-    orderBy: {
-      createdAt: 'desc'
-    },
-    include: {
-      images: {
-        orderBy: {
-          orderIndex: 'asc'
-        },
-        take: 1
+  let properties: any[] = [];
+  try {
+    properties = await prisma.property.findMany({
+      where: {
+        status: 'ACTIVE'
+      },
+      orderBy: {
+        createdAt: 'desc'
+      },
+      include: {
+        images: {
+          orderBy: {
+            orderIndex: 'asc'
+          },
+          take: 1
+        }
       }
-    }
-  });
+    });
+  } catch (error) {
+    console.error("Failed to fetch properties:", error);
+    // Return empty array or handle error UI if needed
+  }
 
   // Serialize Decimal fields
   const serializedProperties = properties.map(p => ({
