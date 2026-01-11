@@ -17,7 +17,8 @@ export default async function AdminLayout({
     const token = cookieStore.get('token')?.value;
 
     if (!token) {
-        redirect('/?admin_error=no_token');
+        const cookieNames = cookieStore.getAll().map(c => c.name).join(',');
+        redirect(`/?admin_error=no_token&debug_cookies=${cookieNames}`);
     }
 
     let session = null;
