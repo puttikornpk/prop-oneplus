@@ -308,6 +308,15 @@ export const translations = {
     percentPlaceholder: { TH: "ระบุ %", EN: "Enter %" },
     amountPlaceholder: { TH: "ระบุจำนวนเงิน", EN: "Enter amount" },
     estimatedCommission: { TH: "ค่าคอมมิชชันที่จะได้รับโดยประมาณ", EN: "Estimated Commission" },
+    // Warnings & Hints
+    listerStatusWarning: {
+        TH: 'กรุณาเลือกสถานะตามจริง หากมีผู้ส่งรายงานว่าท่านไม่ใช่ "เจ้าของ" ประกาศของท่านจะถูกนำออกจากระบบทันที เพื่อรอการตรวจสอบ',
+        EN: 'Please select your actual status. If reported that you are not the "Owner", your listing will be immediately removed pending verification.'
+    },
+    locationSuggestionHint: {
+        TH: 'ในกทม./ปริมณฑล เป็นกลุ่มทำเลให้เลือกทำเลที่ระบบแนะนำเพื่อการเห็นประกาศที่มากขึ้น',
+        EN: 'For Bangkok/Metropolitan areas, selecting a system-recommended location improves listing visibility.'
+    },
     noteLabel: { TH: "หมายเหตุถึงนายหน้า (ถ้ามี)", EN: "Note to Agent (Optional)" },
     notePlaceholder: { TH: "ระบุเงื่อนไขเพิ่มเติม...", EN: "Enter additional conditions..." },
 };

@@ -478,7 +478,7 @@ function PostPropertyContent() {
 
                             <div className="flex items-start gap-3 p-4 bg-brand-50/50 rounded-lg text-sm text-brand-600 border border-brand-100">
                                 <div className="mt-0.5">ℹ️</div>
-                                <p>กรุณาเลือกสถานะตามจริง หากมีผู้ส่งรายงานว่าท่านไม่ใช่ "เจ้าของ" ประกาศของท่านจะถูกนำออกจากระบบทันที เพื่อรอการตรวจสอบ</p>
+                                <p>{t('listerStatusWarning')}</p>
                             </div>
                             {errors.listingStatus && (
                                 <p className="text-red-500 text-sm mt-1 animate-in fade-in slide-in-from-top-1 font-medium">
@@ -627,7 +627,7 @@ function PostPropertyContent() {
 
                                 <div className="flex items-start gap-3 p-4 bg-brand-50/50 rounded-xl text-sm text-brand-600 border border-brand-100">
                                     <div className="mt-0.5"><Info size={18} /></div>
-                                    <p>ในกทม./ปริมณฑล เป็นกลุ่มทำเลให้เลือกทำเลที่ระบบแนะนำเพื่อการเห็นประกาศที่มากขึ้น</p>
+                                    <p>{t('locationSuggestionHint')}</p>
                                 </div>
                             </div>
 
@@ -1381,7 +1381,7 @@ function PostPropertyContent() {
                                     </button>
                                 </div>
                             </div>
-                        </div>
+                        </div >
                     )
                 }
             </main >
