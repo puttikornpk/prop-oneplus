@@ -16,10 +16,16 @@ export default async function AdminLayout({
         redirect('/');
     }
 
-    const session = await prisma.session.findUnique({
-        where: { token },
-        include: { user: { include: { profile: true } } }, // Include profile for name/avatar
-    });
+    let session = null;
+    try {
+        session = await prisma.session.findUnique({
+            where: { token },
+            include: { user: { include: { profile: true } } },
+        });
+    } catch (error) {
+        console.error("Admin Layout DB Error:", error);
+        redirect('/'); // Or to an error page
+    }
 
     if (!session || session.expiresAt < new Date()) {
         redirect('/');
