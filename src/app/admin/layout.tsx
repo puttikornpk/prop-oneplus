@@ -1,6 +1,6 @@
 import { redirect } from 'next/navigation';
-import { cookies } from 'next/headers';
-import prisma from '@/lib/prisma';
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
 import { AdminLayoutClient } from '@/components/admin/AdminLayoutClient';
 
 export default async function AdminLayout({
@@ -8,36 +8,22 @@ export default async function AdminLayout({
 }: {
     children: React.ReactNode;
 }) {
-    // Server-Side Route Protection
-    const cookieStore = await cookies();
+    // Server-Side Route Protection using NextAuth
+    const session = await getServerSession(authOptions);
 
-    // DEBUG: Log all cookies
-    console.log("Admin Layout Cookies:", cookieStore.getAll().map(c => c.name));
+    // DEBUG: Log session
+    console.log("Admin Layout Session:", session ? `User: ${session.user?.email}` : "No Session");
 
-    const token = cookieStore.get('token')?.value;
-
-    if (!token) {
-        const cookieNames = cookieStore.getAll().map(c => c.name).join(',');
-        redirect(`/?admin_error=no_token&debug_cookies=${cookieNames}`);
+    if (!session) {
+        redirect('/?admin_error=no_session');
     }
 
-    let session = null;
-    try {
-        session = await prisma.session.findUnique({
-            where: { token },
-            include: { user: { include: { profile: true } } },
-        });
-    } catch (error) {
-        console.error("Admin Layout DB Error:", error);
-        redirect('/?admin_error=db_error');
-    }
+    // Role Check
+    // Type casting might be needed if ‘role’ isn’t on default Session type
+    const userRole = (session.user as any).role;
 
-    if (!session || session.expiresAt < new Date()) {
-        redirect('/?admin_error=invalid_session');
-    }
-
-    if (session.user.role !== 'ADMIN') {
-        redirect(`/?admin_error=role_mismatch&role=${session.user.role}&email=${session.user.email}`);
+    if (userRole !== 'ADMIN') {
+        redirect(`/?admin_error=role_mismatch&role=${userRole}&email=${session.user?.email}`);
     }
 
     return (
