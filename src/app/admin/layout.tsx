@@ -10,6 +10,10 @@ export default async function AdminLayout({
 }) {
     // Server-Side Route Protection
     const cookieStore = await cookies();
+
+    // DEBUG: Log all cookies
+    console.log("Admin Layout Cookies:", cookieStore.getAll().map(c => c.name));
+
     const token = cookieStore.get('token')?.value;
 
     if (!token) {
@@ -32,7 +36,7 @@ export default async function AdminLayout({
     }
 
     if (session.user.role !== 'ADMIN') {
-        redirect(`/?admin_error=role_mismatch&role=${session.user.role}`);
+        redirect(`/?admin_error=role_mismatch&role=${session.user.role}&email=${session.user.email}`);
     }
 
     return (

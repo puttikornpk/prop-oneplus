@@ -84,16 +84,18 @@ export async function POST(req: Request) {
             expiresAt: session.expiresAt
         });
 
-        // Clear any existing cookie first to prevent collisions
+        // DEBUG: Force secure false and remove delete to test detailed persistence
+        /*
         response.cookies.delete('token');
+        */
 
         response.cookies.set({
             name: 'token',
             value: session.token,
             httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
+            secure: false, // Force false for localhost debugging
             path: '/',
-            sameSite: 'lax', // Handle cross-site/subdomain slightly better locally
+            sameSite: 'lax',
             expires: session.expiresAt,
         });
 
