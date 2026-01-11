@@ -281,7 +281,7 @@ export const Header = () => {
                         )}
 
                         {user && (
-                            <button onClick={handleLogout} className="mt-2 w-full py-2.5 px-4 rounded-lg border border-red-200 text-red-600 font-medium hover:bg-red-50">{t('logout') || 'Logout'}</button>
+                            <button onClick={handleLogout} className="mt-2 w-full py-2.5 px-4 rounded-lg border border-red-200 text-red-600 font-medium hover:bg-red-50">{t('logout' as any) || 'Logout'}</button>
                         )}
                     </div>
                 </div>
