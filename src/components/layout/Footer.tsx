@@ -36,11 +36,11 @@ export const Footer = () => {
                     <div>
                         <h3 className="text-white font-bold mb-6">{t('categories')}</h3>
                         <ul className="space-y-3 text-sm">
-                            <li><Link href="#" className="hover:text-brand-500 transition-all duration-300 hover:pl-2 inline-block">Land in Bangkok</Link></li>
-                            <li><Link href="#" className="hover:text-brand-500 transition-all duration-300 hover:pl-2 inline-block">Land in Chiang Mai</Link></li>
-                            <li><Link href="#" className="hover:text-brand-500 transition-all duration-300 hover:pl-2 inline-block">Land in Phuket</Link></li>
-                            <li><Link href="#" className="hover:text-brand-500 transition-all duration-300 hover:pl-2 inline-block">Land in Pattaya</Link></li>
-                            <li><Link href="#" className="hover:text-brand-500 transition-all duration-300 hover:pl-2 inline-block">Land in Hua Hin</Link></li>
+                            <li><Link href="#" className="hover:text-brand-500 transition-all duration-300 hover:pl-2 inline-block">{t('landInBangkok')}</Link></li>
+                            <li><Link href="#" className="hover:text-brand-500 transition-all duration-300 hover:pl-2 inline-block">{t('landInChiangMai')}</Link></li>
+                            <li><Link href="#" className="hover:text-brand-500 transition-all duration-300 hover:pl-2 inline-block">{t('landInPhuket')}</Link></li>
+                            <li><Link href="#" className="hover:text-brand-500 transition-all duration-300 hover:pl-2 inline-block">{t('landInPattaya')}</Link></li>
+                            <li><Link href="#" className="hover:text-brand-500 transition-all duration-300 hover:pl-2 inline-block">{t('landInHuaHin')}</Link></li>
                         </ul>
                     </div>
 

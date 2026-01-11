@@ -2,7 +2,8 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { MapPin, Heart } from "lucide-react";
+import { MapPin, Heart, Eye } from "lucide-react";
+import { useLanguage } from "@/context/LanguageContext";
 
 interface ListingCardProps {
     property: {
@@ -18,11 +19,13 @@ interface ListingCardProps {
         landNgan?: number;
         landSqWah?: number;
         usableArea?: number;
+        viewCount?: number;
         // Add other fields as needed
     }
 }
 
 export function ListingCard({ property }: ListingCardProps) {
+    const { t } = useLanguage();
     const imageUrl = property.images?.[0]?.url || '/placeholder.jpg';
 
     // Safety checks for numbers
@@ -55,7 +58,7 @@ export function ListingCard({ property }: ListingCardProps) {
                             </span>
                         )}
                         <span className="px-2 py-1 text-xs font-bold bg-brand-600 text-white rounded shadow-sm">
-                            {property.listingType === 'SELL' ? 'Sale' : 'Rent'}
+                            {property.listingType === 'SELL' ? t('SELL') : t('RENT')}
                         </span>
                     </div>
 
@@ -80,7 +83,7 @@ export function ListingCard({ property }: ListingCardProps) {
                         </h3>
                         <div className="flex items-start gap-1 text-sm text-slate-500 mb-4 h-10">
                             <MapPin size={14} className="mt-0.5 flex-shrink-0 text-brand-500" />
-                            <span className="line-clamp-2 text-xs">{property.address || 'ทั่่วไป'}</span>
+                            <span className="line-clamp-2 text-xs">{property.address || t('addressNotSpecified')}</span>
                         </div>
                     </div>
 
@@ -89,32 +92,32 @@ export function ListingCard({ property }: ListingCardProps) {
                         {landRai > 0 || landNgan > 0 || landSqWah > 0 ? (
                             <>
                                 <div className="text-center">
-                                    <div className="text-xs text-slate-400">ไร่</div>
+                                    <div className="text-xs text-slate-400">{t('rai')}</div>
                                     <div className="font-bold text-slate-700">{landRai}</div>
                                 </div>
                                 <div className="text-center border-l border-slate-100">
-                                    <div className="text-xs text-slate-400">งาน</div>
+                                    <div className="text-xs text-slate-400">{t('ngan')}</div>
                                     <div className="font-bold text-slate-700">{landNgan}</div>
                                 </div>
                                 <div className="text-center border-l border-slate-100">
-                                    <div className="text-xs text-slate-400">ตร.ว.</div>
+                                    <div className="text-xs text-slate-400">{t('sqwah')}</div>
                                     <div className="font-bold text-slate-700">{landSqWah}</div>
                                 </div>
                             </>
                         ) : usableArea > 0 && (
                             <div className="col-span-3 text-center flex items-center justify-center gap-2">
                                 <div className="font-bold text-slate-700">{usableArea}</div>
-                                <div className="text-xs text-slate-400">ตร.ม.</div>
+                                <div className="text-xs text-slate-400">{t('sqm')}</div>
                             </div>
                         )}
                     </div>
 
                     <div className="flex justify-between items-center mt-3 pt-3 border-t border-slate-50">
                         <div className="text-[10px] text-slate-400 flex items-center gap-1">
-                            Eye icon 1250 เข้าชม
+                            <i className="lucide-eye w-3.5 h-3.5"></i> {property.viewCount || 0} {t('views')}
                         </div>
                         <div className="text-xs font-bold text-brand-600 flex items-center gap-1 cursor-pointer">
-                            ดูรายละเอียด &rarr;
+                            {t('details')} &rarr;
                         </div>
                     </div>
                 </div>

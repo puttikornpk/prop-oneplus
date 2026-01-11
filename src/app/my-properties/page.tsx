@@ -10,9 +10,11 @@ import { PropertyStatus } from '@prisma/client';
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { useAuth } from "@/context/AuthContext";
+import { useLanguage } from "@/context/LanguageContext";
 
 export default function MyPropertiesPage() {
-    const { user, isLoading } = useAuth(); // Use custom AuthContext
+    const { user, isLoading } = useAuth();
+    const { t } = useLanguage();
     const router = useRouter();
     const [properties, setProperties] = useState<any[]>([]);
     const [isPropertiesLoading, setIsPropertiesLoading] = useState(true);
@@ -88,15 +90,15 @@ export default function MyPropertiesPage() {
     };
 
     const tabs = [
-        { id: 'all', label: 'ทั้งหมด', count: stats.all },
-        { id: 'online', label: 'ประกาศออนไลน์', count: stats.online },
-        { id: 'expiring', label: 'ใกล้หมดอายุ', count: stats.expiring },
-        { id: 'review', label: 'ที่ต้องแก้ไข', count: 0 },
-        { id: 'pending', label: 'รอตรวจสอบ', count: 0 },
-        { id: 'suspended', label: 'ถูกระงับ', count: 0 },
-        { id: 'expired', label: 'หมดอายุ', count: 0 },
-        { id: 'draft', label: 'แบบร่าง', count: stats.draft },
-        { id: 'closed', label: 'ปิดการขาย', count: 0 },
+        { id: 'all', label: t('tabAll'), count: stats.all },
+        { id: 'online', label: t('tabOnline'), count: stats.online },
+        { id: 'expiring', label: t('tabExpiring'), count: stats.expiring },
+        { id: 'review', label: t('tabReview'), count: 0 },
+        { id: 'pending', label: t('tabPending'), count: 0 },
+        { id: 'suspended', label: t('tabSuspended'), count: 0 },
+        { id: 'expired', label: t('tabExpired'), count: 0 },
+        { id: 'draft', label: t('tabDraft'), count: stats.draft },
+        { id: 'closed', label: t('tabClosed'), count: 0 },
     ];
 
     const filteredProperties = activeTab === 'all'
@@ -126,7 +128,7 @@ export default function MyPropertiesPage() {
                             <div className="flex items-center gap-4 px-4 py-3 border-b border-slate-50 overflow-x-auto scrollbar-hide">
                                 <div className="flex items-center gap-2 text-slate-600 font-bold whitespace-nowrap mr-4">
                                     <ArrowUpDown size={20} className="rotate-90" />
-                                    ภาพรวม
+                                    {t('overview')}
                                 </div>
 
                                 {tabs.map(tab => (
@@ -155,17 +157,17 @@ export default function MyPropertiesPage() {
                                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
                                     <input
                                         type="text"
-                                        placeholder="ค้นหาประกาศ"
+                                        placeholder={t('searchMyAds')}
                                         className="w-full pl-10 pr-4 py-2 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 outline-none"
                                     />
                                 </div>
 
                                 <button className="flex items-center gap-2 px-4 py-2 border border-slate-200 rounded-lg text-slate-600 text-sm hover:bg-slate-50 whitespace-nowrap">
-                                    หมวดอสังหาฯ <ChevronDown size={14} />
+                                    {t('propertyType')} <ChevronDown size={14} />
                                 </button>
 
                                 <button className="flex items-center gap-2 px-4 py-2 border border-slate-200 rounded-lg text-slate-600 text-sm hover:bg-slate-50 whitespace-nowrap">
-                                    ประเภทประกาศ <ChevronDown size={14} />
+                                    {t('filters')} <ChevronDown size={14} />
                                 </button>
 
                                 <button className="p-2 border border-slate-200 rounded-lg text-slate-500 hover:bg-slate-50">
@@ -177,7 +179,7 @@ export default function MyPropertiesPage() {
                             </div>
 
                             <button className="px-6 py-2 bg-brand-600 text-white rounded-lg text-sm font-bold shadow-sm hover:bg-brand-700 transition-colors whitespace-nowrap">
-                                ค้นหา
+                                {t('applyFilters')}
                             </button>
                         </div>
 
@@ -189,7 +191,7 @@ export default function MyPropertiesPage() {
                                 ))
                             ) : (
                                 <div className="text-center py-12 text-slate-400">
-                                    ไม่พบประกาศในหมวดหมู่นี้
+                                    {t('noPropertiesFound')}
                                 </div>
                             )}
                         </div>
@@ -197,7 +199,7 @@ export default function MyPropertiesPage() {
                         {/* Pagination Mockup */}
                         {filteredProperties.length > 0 && (
                             <div className="flex justify-end items-center gap-2 text-sm text-slate-500 mt-4">
-                                <span>จำนวนประกาศ/หน้า:</span>
+                                <span>{t('itemsPerPage')}</span>
                                 <select className="border border-slate-200 rounded px-2 py-1 bg-white">
                                     <option>10</option>
                                     <option>20</option>

@@ -152,6 +152,8 @@ model Property {
   bathroom    Int?     @default(0)
   floors      Int?     @default(0)
   
+  viewCount   Int      @default(0)
+  
   // Metadata
   version     Int      @default(0) // For Optimistic Locking
   createdAt   DateTime @default(now())

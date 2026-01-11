@@ -36,6 +36,7 @@ export default async function Home() {
     commissionRate: p.commissionRate ? Number(p.commissionRate) : 0,
     latitude: p.latitude || null,
     longitude: p.longitude || null,
+    viewCount: p.viewCount || 0,
   }));
 
   return <HomeClient properties={serializedProperties} />;

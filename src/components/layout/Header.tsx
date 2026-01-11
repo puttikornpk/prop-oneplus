@@ -102,13 +102,13 @@ export const Header = () => {
                                     </div>
 
                                     <Link href="#" className="flex items-center gap-3 px-4 py-2.5 text-sm text-slate-600 hover:bg-slate-50 hover:text-brand-500 transition-colors">
-                                        <span>หน้าสมาชิก</span>
+                                        <span>{t('memberPage')}</span>
                                     </Link>
 
                                     {/* Admin Link */}
                                     {user.role === 'ADMIN' && (
                                         <Link href="/admin" className="flex items-center gap-3 px-4 py-2.5 text-sm text-slate-600 hover:bg-slate-50 hover:text-brand-500 transition-colors">
-                                            <span>Admin Dashboard</span>
+                                            <span>{t('adminDashboard')}</span>
                                         </Link>
                                     )}
                                     <button
@@ -118,28 +118,28 @@ export const Header = () => {
                                         }}
                                         className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-slate-600 hover:bg-slate-50 hover:text-brand-500 transition-colors text-left"
                                     >
-                                        <span>ประกาศของฉัน</span>
+                                        <span>{t('myProperties')}</span>
                                     </button>
                                     <Link href="#" className="flex items-center gap-3 px-4 py-2.5 text-sm text-slate-600 hover:bg-slate-50 hover:text-brand-500 transition-colors">
-                                        <span>My note</span>
+                                        <span>{t('myNote')}</span>
                                     </Link>
                                     <Link href="#" className="flex items-center gap-3 px-4 py-2.5 text-sm text-slate-600 hover:bg-slate-50 hover:text-brand-500 transition-colors">
-                                        <span>คอร์สเรียนนายหน้า</span>
+                                        <span>{t('agentCourse')}</span>
                                     </Link>
                                     <Link href="#" className="flex items-center gap-3 px-4 py-2.5 text-sm text-slate-600 hover:bg-slate-50 hover:text-brand-500 transition-colors">
-                                        <span>แก้ไขข้อมูลส่วนตัว</span>
+                                        <span>{t('editProfile')}</span>
                                     </Link>
                                     <Link href="#" className="flex items-center gap-3 px-4 py-2.5 text-sm text-slate-600 hover:bg-slate-50 hover:text-brand-500 transition-colors">
-                                        <span>ติดต่อเจ้าหน้าที่</span>
+                                        <span>{t('contactSupport')}</span>
                                     </Link>
                                     <Link href="#" className="flex items-center gap-3 px-4 py-2.5 text-sm text-slate-600 hover:bg-slate-50 hover:text-brand-500 transition-colors">
-                                        <span>เติมเครดิต</span>
+                                        <span>{t('topUp')}</span>
                                     </Link>
                                     <Link href="#" className="flex items-center gap-3 px-4 py-2.5 text-sm text-slate-600 hover:bg-slate-50 hover:text-brand-500 transition-colors">
-                                        <span>เว็บไซต์ของฉัน</span>
+                                        <span>{t('myWebsite')}</span>
                                     </Link>
                                     <Link href="#" className="flex items-center gap-3 px-4 py-2.5 text-sm text-slate-600 hover:bg-slate-50 hover:text-brand-500 transition-colors">
-                                        <span>เชื่อมต่อ Line</span>
+                                        <span>{t('connectLine')}</span>
                                     </Link>
 
                                     <div className="border-t border-slate-100 my-2 pt-2">
@@ -147,7 +147,7 @@ export const Header = () => {
                                             onClick={handleLogout}
                                             className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-slate-600 hover:bg-red-50 hover:text-red-500 transition-colors text-left"
                                         >
-                                            <span>ออกจากระบบ</span>
+                                            <span>{t('logout')}</span>
                                         </button>
                                     </div>
                                 </div>
@@ -255,20 +255,20 @@ export const Header = () => {
                         <div className="grid grid-cols-4 gap-2 mt-2 pt-2 border-t border-slate-100">
                             <button className="flex flex-col items-center justify-center p-2 text-slate-600 hover:bg-slate-50 rounded-lg">
                                 <Heart size={20} />
-                                <span className="text-[10px] mt-1">Saved</span>
+                                <span className="text-[10px] mt-1">{t('saved')}</span>
                             </button>
                             <button className="flex flex-col items-center justify-center p-2 text-slate-600 hover:bg-slate-50 rounded-lg relative">
                                 <Bell size={20} />
                                 <span className="absolute top-2 right-4 w-1.5 h-1.5 bg-red-500 rounded-full"></span>
-                                <span className="text-[10px] mt-1">Alerts</span>
+                                <span className="text-[10px] mt-1">{t('alerts')}</span>
                             </button>
                             <button className="flex flex-col items-center justify-center p-2 text-slate-600 hover:bg-slate-50 rounded-lg">
                                 <MessageSquare size={20} />
-                                <span className="text-[10px] mt-1">Chat</span>
+                                <span className="text-[10px] mt-1">{t('chat')}</span>
                             </button>
                             <button className="flex flex-col items-center justify-center p-2 text-slate-600 hover:bg-slate-50 rounded-lg">
                                 <History size={20} />
-                                <span className="text-[10px] mt-1">History</span>
+                                <span className="text-[10px] mt-1">{t('history')}</span>
                             </button>
                         </div>
 

@@ -7,15 +7,37 @@ import { User, MapPin, Phone, MessageCircle, Share2, Heart, Flag, CheckCircle2, 
 import Link from "next/link";
 import Image from "next/image";
 
+import { useLanguage } from "@/context/LanguageContext";
+
 interface PropertyDetailClientProps {
     property: any; // Type properly in real app
     currentUser: any;
 }
 
 export function PropertyDetailClient({ property, currentUser }: PropertyDetailClientProps) {
+    const { t } = useLanguage();
     const [activeImageIndex, setActiveImageIndex] = useState(0);
     const [isLightboxOpen, setIsLightboxOpen] = useState(false);
     const [lightboxTab, setLightboxTab] = useState<'images' | 'contact'>('images');
+
+    // Increment View Count
+    useEffect(() => {
+        const incrementView = async () => {
+            const storageKey = `viewed_${property.id}`;
+            const hasViewed = sessionStorage.getItem(storageKey);
+
+            if (!hasViewed) {
+                try {
+                    await fetch(`/api/properties/${property.id}/view`, { method: 'PATCH' });
+                    sessionStorage.setItem(storageKey, 'true');
+                } catch (error) {
+                    console.error("Failed to increment view count:", error);
+                }
+            }
+        };
+
+        incrementView();
+    }, [property.id]);
 
     // Description Truncation Logic
     const [isExpanded, setIsExpanded] = useState(false);
@@ -54,7 +76,7 @@ export function PropertyDetailClient({ property, currentUser }: PropertyDetailCl
             <main className="container mx-auto px-4 py-8">
                 {/* Breadcrumbs */}
                 <div className="flex items-center gap-2 text-sm text-slate-500 mb-4">
-                    <Link href="/" className="hover:text-brand-600">หน้าแรก</Link>
+                    <Link href="/" className="hover:text-brand-600">{t('breadcrumbsHome')}</Link>
                     <span>/</span>
                     <span className="text-slate-900 line-clamp-1">{property.topic}</span>
                 </div>
@@ -77,15 +99,15 @@ export function PropertyDetailClient({ property, currentUser }: PropertyDetailCl
                                 />
                                 <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors flex items-center justify-center">
                                     <span className="opacity-0 group-hover:opacity-100 bg-black/50 text-white px-4 py-2 rounded-full backdrop-blur-sm transition-opacity">
-                                        ดูรูปทั้งหมด ({images.length})
+                                        {t('viewAllPhotos')} ({images.length})
                                     </span>
                                 </div>
                                 <div className="absolute top-4 left-4 flex gap-2">
                                     <span className="bg-brand-600 text-white px-3 py-1 rounded-lg text-xs font-bold shadow-lg">
-                                        {property.listingType === 'SELL' ? 'ขาย' : 'เช่า'}
+                                        {t(property.listingType as any)}
                                     </span>
                                     <span className="bg-white/90 text-slate-800 px-3 py-1 rounded-lg text-xs font-bold shadow-lg backdrop-blur-sm">
-                                        {property.category}
+                                        {t(property.category as any) || property.category}
                                     </span>
                                 </div>
                             </div>
@@ -110,10 +132,10 @@ export function PropertyDetailClient({ property, currentUser }: PropertyDetailCl
                         <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
                             <div className="flex gap-2 mb-2">
                                 <span className={`px-2 py-0.5 text-xs font-bold rounded ${property.listingType === 'SELL' ? 'bg-green-100 text-green-700' : 'bg-blue-100 text-blue-700'}`}>
-                                    {property.listingType === 'SELL' ? 'ขาย' : 'เช่า'}
+                                    {t(property.listingType as any)}
                                 </span>
                                 <span className="px-2 py-0.5 text-xs font-bold rounded bg-slate-100 text-slate-600">
-                                    {property.category || 'อสังหาฯ'}
+                                    {t(property.category as any) || property.category || t('propertyType')}
                                 </span>
                             </div>
 
@@ -130,14 +152,19 @@ export function PropertyDetailClient({ property, currentUser }: PropertyDetailCl
                                     ฿{property.price?.toLocaleString()}
                                 </div>
                                 <div className="text-sm text-slate-500 mb-1">
-                                    (฿{Math.round(property.price / (property.usableArea || 1)).toLocaleString()} / ตร.ม.)
+                                    {property.category === 'LAND' ? (
+                                        // Calculate total Square Wah: (Rai * 400) + (Ngan * 100) + SqWah
+                                        <span>(฿{Math.round(property.price / ((property.landRai * 400) + (property.landNgan * 100) + (Number(property.landSqWah) || 0) || 1)).toLocaleString()} {t('perSqWah')})</span>
+                                    ) : (
+                                        <span>(฿{Math.round(property.price / (property.usableArea || 1)).toLocaleString()} {t('perSqm')})</span>
+                                    )}
                                 </div>
                             </div>
                         </div>
 
                         {/* Property Details Section */}
                         <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
-                            <h2 className="text-xl font-bold text-slate-800 mb-6">{property.category === 'LAND' ? 'ข้อมูลขนาดแปลง' : 'ข้อมูลอสังหาฯ'}</h2>
+                            <h2 className="text-xl font-bold text-slate-800 mb-6">{property.category === 'LAND' ? t('landInfo') : t('propertyInfo')}</h2>
 
                             {property.category === 'LAND' ? (
                                 /* Land Details */
@@ -146,12 +173,12 @@ export function PropertyDetailClient({ property, currentUser }: PropertyDetailCl
                                         <Layers size={24} />
                                     </div>
                                     <div>
-                                        <div className="text-slate-500 text-sm mb-1">ขนาดที่ดิน</div>
+                                        <div className="text-slate-500 text-sm mb-1">{t('landSize')}</div>
                                         <div className="text-lg font-bold text-slate-800">
                                             {[
-                                                property.landRai > 0 && `${property.landRai} ไร่`,
-                                                property.landNgan > 0 && `${property.landNgan} งาน`,
-                                                property.landSqWah > 0 && `${property.landSqWah} ตร.ว.`
+                                                property.landRai > 0 && `${property.landRai} ${t('rai')}`,
+                                                property.landNgan > 0 && `${property.landNgan} ${t('ngan')}`,
+                                                property.landSqWah > 0 && `${property.landSqWah} ${t('sqwah')}`
                                             ].filter(Boolean).join(' ') || '-'}
                                         </div>
                                     </div>
@@ -164,8 +191,8 @@ export function PropertyDetailClient({ property, currentUser }: PropertyDetailCl
                                             <Layout size={24} />
                                         </div>
                                         <div>
-                                            <div className="text-slate-500 text-sm mb-1">พื้นที่ใช้สอย</div>
-                                            <div className="text-lg font-bold text-slate-800">{property.usableArea ? `${property.usableArea} ตร.ม.` : '-'}</div>
+                                            <div className="text-slate-500 text-sm mb-1">{t('usableArea')}</div>
+                                            <div className="text-lg font-bold text-slate-800">{property.usableArea ? `${property.usableArea} ${t('sqm')}` : '-'}</div>
                                         </div>
                                     </div>
                                     <div className="flex items-center gap-4">
@@ -173,7 +200,7 @@ export function PropertyDetailClient({ property, currentUser }: PropertyDetailCl
                                             <ArrowUp size={24} />
                                         </div>
                                         <div>
-                                            <div className="text-slate-500 text-sm mb-1">ชั้นที่</div>
+                                            <div className="text-slate-500 text-sm mb-1">{t('floors')}</div>
                                             <div className="text-lg font-bold text-slate-800">{property.floors || '-'}</div>
                                         </div>
                                     </div>
@@ -182,7 +209,7 @@ export function PropertyDetailClient({ property, currentUser }: PropertyDetailCl
                                             <BedDouble size={24} />
                                         </div>
                                         <div>
-                                            <div className="text-slate-500 text-sm mb-1">ห้องนอน</div>
+                                            <div className="text-slate-500 text-sm mb-1">{t('bedroom')}</div>
                                             <div className="text-lg font-bold text-slate-800">{property.bedroom || '-'}</div>
                                         </div>
                                     </div>
@@ -191,7 +218,7 @@ export function PropertyDetailClient({ property, currentUser }: PropertyDetailCl
                                             <Bath size={24} />
                                         </div>
                                         <div>
-                                            <div className="text-slate-500 text-sm mb-1">ห้องน้ำ</div>
+                                            <div className="text-slate-500 text-sm mb-1">{t('bathroom')}</div>
                                             <div className="text-lg font-bold text-slate-800">{property.bathroom || '-'}</div>
                                         </div>
                                     </div>
@@ -201,7 +228,7 @@ export function PropertyDetailClient({ property, currentUser }: PropertyDetailCl
 
                         {/* Description */}
                         <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
-                            <h2 className="text-xl font-bold text-slate-800 mb-4">รายละเอียด</h2>
+                            <h2 className="text-xl font-bold text-slate-800 mb-4">{t('descriptionTitle')}</h2>
                             <div
                                 ref={descriptionRef}
                                 className={`prose prose-slate max-w-none text-slate-600 whitespace-pre-line ${isExpanded ? '' : 'line-clamp-[9]'}`}
@@ -213,7 +240,7 @@ export function PropertyDetailClient({ property, currentUser }: PropertyDetailCl
                                     onClick={() => setIsExpanded(!isExpanded)}
                                     className="mt-2 flex items-center gap-1 text-brand-600 font-medium hover:underline focus:outline-none"
                                 >
-                                    {isExpanded ? 'แสดงน้อยลง' : 'แสดงรายละเอียดเพิ่มเติม'}
+                                    {isExpanded ? t('showLess') : t('showMore')}
                                     {isExpanded ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
                                 </button>
                             )}
@@ -222,7 +249,7 @@ export function PropertyDetailClient({ property, currentUser }: PropertyDetailCl
                         {/* Location / Map */}
                         <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
                             <h2 className="text-xl font-bold text-slate-800 mb-4 h-flex items-center gap-2">
-                                <MapPin className="text-brand-600" /> แผนที่
+                                <MapPin className="text-brand-600" /> {t('mapTitle')}
                             </h2>
                             <div className="w-full h-80 bg-slate-100 rounded-xl overflow-hidden relative">
                                 <iframe
@@ -242,9 +269,9 @@ export function PropertyDetailClient({ property, currentUser }: PropertyDetailCl
                         {/* Agent Card */}
                         <div className="bg-white rounded-2xl p-6 shadow-lg shadow-brand-50 border border-brand-100 sticky top-24">
                             <div className="text-sm font-bold text-brand-600 mb-4 flex justify-between items-center">
-                                <span>ผู้ลงประกาศ</span>
+                                <span>{t('agentTitle')}</span>
                                 <span className="bg-brand-100 text-brand-700 px-2 py-0.5 rounded text-xs">
-                                    {property.listingStatus === 'AGENT' ? 'Professional' : 'Owner'}
+                                    {t(property.listingStatus === 'AGENT' ? 'professionalAgent' : 'ownerAgent')}
                                 </span>
                             </div>
 
@@ -267,7 +294,7 @@ export function PropertyDetailClient({ property, currentUser }: PropertyDetailCl
                                         <span className="text-yellow-500">★</span> 5.0 (12)
                                     </div>
                                     <Link href="#" className="text-xs text-brand-600 hover:underline">
-                                        ไปที่โปรไฟล์ผู้ขาย &gt;
+                                        {t('goToProfile')}
                                     </Link>
                                 </div>
                             </div>
@@ -276,11 +303,11 @@ export function PropertyDetailClient({ property, currentUser }: PropertyDetailCl
                                 <div className="grid grid-cols-2 gap-3">
                                     <button className="flex items-center justify-center gap-2 bg-brand-600 text-white py-3 rounded-xl font-bold hover:bg-brand-700 transition-all shadow-md active:scale-95">
                                         <MessageCircle size={20} />
-                                        ส่งข้อความ
+                                        {t('sendMessage')}
                                     </button>
                                     <button className="flex items-center justify-center gap-2 bg-green-500 text-white py-3 rounded-xl font-bold hover:bg-green-600 transition-all shadow-md active:scale-95">
                                         <div className="font-sans font-black">LINE</div>
-                                        แอดไลน์
+                                        {t('addLine')}
                                     </button>
                                 </div>
                                 <button className="w-full flex items-center justify-center gap-2 border-2 border-brand-100 text-brand-600 bg-white py-3 rounded-xl font-bold hover:bg-brand-50 transition-all active:scale-95">
@@ -290,7 +317,7 @@ export function PropertyDetailClient({ property, currentUser }: PropertyDetailCl
                             </div>
 
                             <div className="mt-6 pt-6 border-t border-slate-100">
-                                <h3 className="text-sm font-bold text-slate-800 mb-3">ช่องทางติดต่อ</h3>
+                                <h3 className="text-sm font-bold text-slate-800 mb-3">{t('contactChannels')}</h3>
                                 <div className="flex justify-center gap-4">
                                     <button className="w-10 h-10 rounded-full bg-green-50 text-green-600 flex items-center justify-center hover:bg-green-100 transition-colors">
                                         <Phone size={20} />
@@ -306,7 +333,7 @@ export function PropertyDetailClient({ property, currentUser }: PropertyDetailCl
 
                             <div className="mt-4 pt-4 border-t border-slate-100 text-center">
                                 <button className="text-xs text-slate-400 hover:text-red-500 flex items-center justify-center gap-1 w-full transition-colors">
-                                    <Flag size={12} /> แจ้งรายงาน / ประกาศไม่เหมาะสม
+                                    <Flag size={12} /> {t('reportListing')}
                                 </button>
                             </div>
                         </div>
@@ -405,7 +432,7 @@ export function PropertyDetailClient({ property, currentUser }: PropertyDetailCl
                                     </button>
                                     <button className="w-full flex items-center justify-center gap-2 bg-green-500 text-white py-3 rounded-xl font-bold hover:bg-green-600 transition-colors">
                                         <div className="font-sans font-black">LINE</div>
-                                        แอดไลน์
+                                        {t('addLine')}
                                     </button>
                                 </div>
                             </div>
@@ -421,7 +448,7 @@ export function PropertyDetailClient({ property, currentUser }: PropertyDetailCl
                                     }`}
                             >
                                 <div className="flex items-center gap-2">
-                                    <span>{images.length} รูปภาพ</span>
+                                    <span>{images.length} {t('photosCount')}</span>
                                 </div>
                                 {lightboxTab === 'images' && (
                                     <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-brand-400 rounded-full" />
@@ -433,7 +460,7 @@ export function PropertyDetailClient({ property, currentUser }: PropertyDetailCl
                                     }`}
                             >
                                 <div className="flex items-center gap-2">
-                                    <span>ติดต่อ</span>
+                                    <span>{t('contactTab')}</span>
                                 </div>
                                 {lightboxTab === 'contact' && (
                                     <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-brand-400 rounded-full" />

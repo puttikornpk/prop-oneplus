@@ -9,6 +9,7 @@ import { User, Flag, Settings, Home, Building2, Warehouse, Factory, Store, LandP
 import Link from "next/link";
 import { LocationPickerModal } from "@/components/property/LocationPickerModal";
 import { PageLoader } from "@/components/ui/PageLoader";
+import { LanguageSwitcher } from "@/components/layout/LanguageSwitcher";
 
 export default function PostPropertyPage() {
     return (
@@ -210,76 +211,76 @@ function PostPropertyContent() {
         switch (step) {
             case 1:
                 if (!listingStatus) {
-                    newErrors.listingStatus = 'กรุณาระบุสถานะผู้ประกาศ';
+                    newErrors.listingStatus = t('errListingStatus');
                     isValid = false;
                 }
                 if (!listingType) {
-                    newErrors.listingType = 'กรุณาระบุประเภทประกาศ';
+                    newErrors.listingType = t('errListingType');
                     isValid = false;
                 }
                 if (!propertyCategory) {
-                    newErrors.propertyCategory = 'กรุณาระบุประเภทอสังหาฯ';
+                    newErrors.propertyCategory = t('errCategory');
                     isValid = false;
                 }
                 if (!address.trim()) {
-                    newErrors.address = 'กรุณาระบุทำเลที่คุณต้องการ';
+                    newErrors.address = t('errAddress');
                     isValid = false;
                 }
                 break;
             case 2:
                 if (images.length < 5) {
-                    newErrors.images = 'กรุณาอัปโหลดรูปภาพอย่างน้อย 5 รูป';
+                    newErrors.images = t('errImages');
                     isValid = false;
                 }
                 break;
             case 3:
                 if (!topic.trim()) {
-                    newErrors.topic = 'กรุณาระบุหัวข้อประกาศ';
+                    newErrors.topic = t('errTopic');
                     isValid = false;
                 }
                 if (!description.trim()) {
-                    newErrors.description = 'กรุณาระบุรายละเอียดประกาศ';
+                    newErrors.description = t('errDescription');
                     isValid = false;
                 }
 
                 if (propertyCategory === 'land') {
                     // Land: Validation rule - At least 1 field
                     if (!landSize.rai && !landSize.ngan && !landSize.sqWah) {
-                        newErrors.landSize = 'กรุณาระบุขนาดที่ดินอย่างน้อย 1 ช่อง';
+                        newErrors.landSize = t('errLandSize');
                         isValid = false;
                     }
                 } else {
                     // Building: Validation rule - All specs required
                     if (!usableArea) {
-                        newErrors.usableArea = 'กรุณาระบุพื้นที่ใช้สอย';
+                        newErrors.usableArea = t('errUsableArea');
                         isValid = false;
                     }
                     if (!bedroom) {
-                        newErrors.bedroom = 'กรุณาระบุจำนวนห้องนอน';
+                        newErrors.bedroom = t('errBedroom');
                         isValid = false;
                     }
                     if (!bathroom) {
-                        newErrors.bathroom = 'กรุณาระบุจำนวนห้องน้ำ';
+                        newErrors.bathroom = t('errBathroom');
                         isValid = false;
                     }
                     if (!floors) {
-                        newErrors.floors = 'กรุณาระบุชั้นหรือจำนวนชั้น';
+                        newErrors.floors = t('errFloors');
                         isValid = false;
                     }
                 }
                 break;
             case 4:
                 if (!price) {
-                    newErrors.price = 'กรุณาระบุราคาขาย';
+                    newErrors.price = t('errPrice');
                     isValid = false;
                 }
                 if (acceptAgent) {
                     if (commissionType === 'percent' && !commissionRate) {
-                        newErrors.commissionRate = 'กรุณาระบุเปอร์เซ็นต์ค่าคอมมิชชั่น';
+                        newErrors.commissionRate = t('commissionRateLabel');
                         isValid = false;
                     }
                     if (commissionType === 'fixed' && !commissionRate) {
-                        newErrors.commissionRate = 'กรุณาระบุจำนวนเงินค่าคอมมิชชั่น';
+                        newErrors.commissionRate = t('commissionAmountLabel');
                         isValid = false;
                     }
                 }
@@ -393,13 +394,7 @@ function PostPropertyContent() {
                             </div>
                             <span className="text-sm font-medium">{user.profile?.firstName}</span>
                         </div>
-                        <img
-                            src="https://flagcdn.com/w20/th.png"
-                            srcSet="https://flagcdn.com/w40/th.png 2x"
-                            width="20"
-                            alt="TH"
-                            className="rounded-sm"
-                        />
+                        <LanguageSwitcher />
                     </div>
                 </div>
             </header>
@@ -425,10 +420,10 @@ function PostPropertyContent() {
 
                     <div className="flex justify-between items-start relative">
                         {[
-                            { id: 1, label: 'นำเสนออสังหาฯของคุณ' },
-                            { id: 2, label: 'เพิ่มมีเดีย' },
-                            { id: 3, label: 'เพิ่มรายละเอียด' },
-                            { id: 4, label: 'เผยแพร่ !' }
+                            { id: 1, label: t('postPropStep1') },
+                            { id: 2, label: t('postPropStep2') },
+                            { id: 3, label: t('postPropStep3') },
+                            { id: 4, label: t('postPropStep4') }
                         ].map((step) => (
                             <div key={step.id} className="flex flex-col items-center gap-3 cursor-pointer" onClick={() => step.id < currentStep && setCurrentStep(step.id)}>
                                 <div
@@ -458,7 +453,7 @@ function PostPropertyContent() {
                         <div className="bg-white rounded-2xl p-6 shadow-[0_4px_24px_rgba(0,0,0,0.06)] border border-slate-100 space-y-4">
                             <div className="flex items-center gap-2">
                                 <User size={20} className="text-slate-700" />
-                                <h2 className="text-lg font-bold text-slate-800">สถานะผู้ประกาศ <span className="text-red-500">*</span></h2>
+                                <h2 className="text-lg font-bold text-slate-800">{t('listingStatusLabel')} <span className="text-red-500">*</span></h2>
                             </div>
                             <div className="grid grid-cols-2 gap-4">
                                 <button
@@ -468,7 +463,7 @@ function PostPropertyContent() {
                                         : 'bg-white border-slate-200 text-slate-600 hover:border-slate-300'
                                         }`}
                                 >
-                                    เจ้าของ (Owner)
+                                    {t('ownerAgent')}
                                 </button>
                                 <button
                                     onClick={() => setListingStatus('agent')}
@@ -477,7 +472,7 @@ function PostPropertyContent() {
                                         : 'bg-white border-slate-200 text-slate-600 hover:border-slate-300'
                                         }`}
                                 >
-                                    นายหน้า (Agent)
+                                    {t('professionalAgent')}
                                 </button>
                             </div>
 
@@ -496,16 +491,16 @@ function PostPropertyContent() {
                         <div className="bg-white rounded-2xl p-6 shadow-[0_4px_24px_rgba(0,0,0,0.06)] border border-slate-100 space-y-4">
                             <div className="flex items-center gap-2">
                                 <Flag size={20} className="text-slate-700" />
-                                <h2 className="text-lg font-bold text-slate-800">ประเภทประกาศ <span className="text-red-500">*</span></h2>
+                                <h2 className="text-lg font-bold text-slate-800">{t('listingTypeLabel')} <span className="text-red-500">*</span></h2>
                             </div>
                             <div className="grid grid-cols-3 gap-4">
                                 {(
                                     [
-                                        { id: 'sell', label: 'ขาย' },
-                                        { id: 'rent', label: 'เช่า' },
-                                        { id: 'sell_rent', label: 'ขายและเช่า' },
-                                        { id: 'lease', label: 'เซ้ง' },
-                                        { id: 'down_payment', label: 'ขายดาวน์' },
+                                        { id: 'sell', label: t('SELL') },
+                                        { id: 'rent', label: t('RENT') },
+                                        { id: 'sell_rent', label: t('SELL_RENT') },
+                                        { id: 'lease', label: t('LEASE') },
+                                        { id: 'down_payment', label: t('DOWN_PAYMENT') },
                                     ] as { id: string, label: string, tag?: string }[]
                                 ).map((type) => (
                                     <button
@@ -536,21 +531,21 @@ function PostPropertyContent() {
                         <div className="bg-white rounded-2xl p-6 shadow-[0_4px_24px_rgba(0,0,0,0.06)] border border-slate-100 space-y-4">
                             <div className="flex items-center gap-2">
                                 <Building2 size={20} className="text-slate-700" />
-                                <h2 className="text-lg font-bold text-slate-800">ประเภทอสังหาฯ <span className="text-red-500">*</span></h2>
+                                <h2 className="text-lg font-bold text-slate-800">{t('propertyCategoryLabel')} <span className="text-red-500">*</span></h2>
                             </div>
 
                             <div className="space-y-2">
-                                <div className="text-sm font-medium text-slate-500 mb-2">ที่อยู่อาศัย</div>
+                                <div className="text-sm font-medium text-slate-500 mb-2">{t('residential')}</div>
                                 <div className="grid grid-cols-3 gap-4">
                                     {[
-                                        { id: 'condo', label: 'คอนโด' },
-                                        { id: 'apartment', label: 'อพาร์ตเมนต์' },
-                                        { id: 'house', label: 'บ้าน/บ้านเดี่ยว' },
-                                        { id: 'twin_house', label: 'บ้านแฝด' },
-                                        { id: 'townhome', label: 'ทาวน์โฮม/ทาวน์เฮ้าส์' },
-                                        { id: 'home_office', label: 'โฮมออฟฟิศ' },
-                                        { id: 'land', label: 'ที่ดิน' },
-                                        { id: 'pool_villa', label: 'พูลวิลล่า' },
+                                        { id: 'condo', label: t('condo') },
+                                        { id: 'apartment', label: 'Apartment' },
+                                        { id: 'house', label: t('house') },
+                                        { id: 'twin_house', label: 'Twin House' },
+                                        { id: 'townhome', label: 'Townhome' },
+                                        { id: 'home_office', label: 'Home Office' },
+                                        { id: 'land', label: t('land') },
+                                        { id: 'pool_villa', label: 'Pool Villa' },
                                     ].map((prop) => (
                                         <button
                                             key={prop.id}
@@ -567,17 +562,17 @@ function PostPropertyContent() {
                             </div>
 
                             <div className="space-y-2 mt-4">
-                                <div className="text-sm font-medium text-slate-500 mb-2">เชิงพาณิชย์</div>
+                                <div className="text-sm font-medium text-slate-500 mb-2">{t('commercial')}</div>
                                 <div className="grid grid-cols-3 gap-4">
                                     {[
                                         { id: 'co_working', label: 'Co-working Space' },
-                                        { id: 'shop', label: 'ร้านค้า/ตลาดนัด' },
-                                        { id: 'commercial', label: 'อาคารพาณิชย์' },
-                                        { id: 'office', label: 'สำนักงาน' },
-                                        { id: 'factory', label: 'โรงงาน' },
-                                        { id: 'showroom', label: 'โชว์รูม' },
-                                        { id: 'warehouse', label: 'โกดัง' },
-                                        { id: 'hotel', label: 'กิจการโรงแรม & รีสอร์ท' },
+                                        { id: 'shop', label: 'Shop / Market' },
+                                        { id: 'commercial', label: 'Commercial Building' },
+                                        { id: 'office', label: 'Office' },
+                                        { id: 'factory', label: 'Factory' },
+                                        { id: 'showroom', label: 'Showroom' },
+                                        { id: 'warehouse', label: 'Warehouse' },
+                                        { id: 'hotel', label: 'Hotel & Resort' },
                                     ].map((prop) => (
                                         <button
                                             key={prop.id}
@@ -604,7 +599,7 @@ function PostPropertyContent() {
                             <div className="space-y-4">
                                 <div className="flex items-center gap-2">
                                     <MapPin size={24} className="text-slate-700" />
-                                    <h2 className="text-xl font-bold text-slate-800">ทำเล <span className="text-red-500">*</span></h2>
+                                    <h2 className="text-xl font-bold text-slate-800">{t('locationLabel')} <span className="text-red-500">*</span></h2>
                                 </div>
 
                                 <div className="relative">
@@ -612,7 +607,7 @@ function PostPropertyContent() {
                                         type="text"
                                         value={address}
                                         onChange={(e) => setAddress(e.target.value)}
-                                        placeholder="ค้นหาตำแหน่งที่คุณต้องการ"
+                                        placeholder={t('locationPlaceholder')}
                                         className="w-full pl-6 pr-12 py-4 rounded-xl border border-slate-200 focus:border-brand-500 focus:ring-4 focus:ring-brand-50 transition-all text-slate-700 text-lg placeholder:text-slate-300"
                                     />
                                     {address && (
@@ -640,7 +635,7 @@ function PostPropertyContent() {
                                 <div className="flex items-center justify-between">
                                     <div className="flex items-center gap-2">
                                         <Map size={24} className="text-slate-700" />
-                                        <h2 className="text-xl font-bold text-slate-800">ตำแหน่งที่ตั้งของทรัพย์</h2>
+                                        <h2 className="text-xl font-bold text-slate-800">{t('pinLocationLabel')}</h2>
                                     </div>
 
                                     {/* Toggle Switch */}
@@ -651,7 +646,7 @@ function PostPropertyContent() {
                                         <div className={`absolute left-1 top-1 w-6 h-6 bg-white rounded-full shadow-md transform transition-transform duration-300 ${isMapEnabled ? 'translate-x-6' : 'translate-x-0'}`}></div>
                                     </button>
                                 </div>
-                                <p className="text-slate-500 text-sm">ตรวจสอบตำแหน่งที่ระบบปักหมุดให้อีกครั้ง หากพบว่าไม่ตรงคุณสามารถแก้ไขทันที</p>
+                                <p className="text-slate-500 text-sm">{t('pinLocationDesc')}</p>
 
                                 {isMapEnabled && (
                                     <div className="relative w-full h-64 bg-slate-100 rounded-xl overflow-hidden border border-slate-200 mt-4 group">
@@ -680,7 +675,7 @@ function PostPropertyContent() {
                                                 className="flex items-center gap-2 bg-white hover:bg-slate-50 text-brand-600 px-4 py-2 rounded-lg shadow-lg border border-brand-200 text-sm font-medium transition-all transform hover:scale-105"
                                             >
                                                 <div className="w-4 h-4 border-2 border-brand-600 rounded-[4px]"></div>
-                                                แก้ไขตำแหน่งทรัพย์
+                                                {t('editPin')}
                                             </button>
                                         </div>
 
@@ -709,7 +704,7 @@ function PostPropertyContent() {
                                 onClick={handleNext}
                                 className="w-full bg-brand-600 hover:bg-brand-700 text-white text-xl font-medium py-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02] active:scale-95"
                             >
-                                ถัดไป
+                                {t('next')}
                             </button>
                         </div>
                     </div>
@@ -721,17 +716,17 @@ function PostPropertyContent() {
                         <div className="bg-white rounded-2xl p-6 shadow-[0_4px_24px_rgba(0,0,0,0.06)] border border-slate-100 space-y-4">
                             <div className="flex items-center gap-2">
                                 <ImageIcon size={24} className="text-slate-700" />
-                                <h2 className="text-xl font-bold text-slate-800">รูปภาพประกาศ <span className="text-red-500">*</span></h2>
+                                <h2 className="text-xl font-bold text-slate-800">{t('imagesLabel')} <span className="text-red-500">*</span></h2>
                             </div>
 
                             <div className="bg-brand-50 border border-brand-100 rounded-xl p-4 flex items-start gap-3">
                                 <Info className="text-brand-600 shrink-0 mt-0.5" size={20} />
                                 <div className="text-sm text-brand-700 space-y-1">
-                                    <p className="font-medium">คำแนะนำในการอัปโหลด</p>
+                                    <p className="font-medium">{t('uploadGuideTitle')}</p>
                                     <ul className="list-disc list-inside space-y-0.5 opacity-90">
-                                        <li>รองรับไฟล์ JPG, PNG, WEBP ขนาดไม่เกิน 5MB</li>
-                                        <li>รูปภาพควรเป็นแนวนอน อัตราส่วน 4:3 หรือ 16:9</li>
-                                        <li>อัปโหลดได้อย่างน้อย 5 รูป และสูงสุด 20 รูป</li>
+                                        <li>{t('uploadGuide1')}</li>
+                                        <li>{t('uploadGuide2')}</li>
+                                        <li>{t('uploadGuide3')}</li>
                                     </ul>
                                 </div>
                             </div>
@@ -755,12 +750,13 @@ function PostPropertyContent() {
                                 />
                                 <div className="flex flex-col items-center gap-4 pointer-events-none">
                                     <div className={`w-20 h-20 rounded-full flex items-center justify-center transition-colors ${isDragging ? 'bg-brand-100 text-brand-600' : 'bg-slate-100 text-slate-400'
-                                        }`}>
+                                        }`}
+                                    >
                                         <UploadCloud size={40} />
                                     </div>
                                     <div className="space-y-1">
                                         <h3 className="text-lg font-semibold text-slate-700">
-                                            ลากไฟล์มาวางที่นี่ หรือ <span className="text-brand-600">กดเพื่อเลือกรูปภาพ</span>
+                                            {t('dragDropText')} <span className="text-brand-600">{t('clickToSelect')}</span>
                                         </h3>
                                         <p className="text-slate-500 text-sm">อัปโหลดได้สูงสุด 20 รูป</p>
                                     </div>
@@ -788,7 +784,7 @@ function PostPropertyContent() {
                                             </div>
                                             {index === 0 && (
                                                 <div className="absolute top-2 left-2 px-2 py-1 bg-brand-600 text-white text-[10px] font-bold rounded-md shadow-sm">
-                                                    รูปหลัก
+                                                    {t('mainImage')}
                                                 </div>
                                             )}
                                         </div>
@@ -804,7 +800,7 @@ function PostPropertyContent() {
                                         />
                                         <div className="flex flex-col items-center gap-2 text-slate-400 group-hover:text-brand-500">
                                             <Plus size={32} />
-                                            <span className="text-xs font-medium">เพิ่มรูปภาพ</span>
+                                            <span className="text-xs font-medium">{t('addImage')}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -817,13 +813,13 @@ function PostPropertyContent() {
                                 onClick={() => setCurrentStep(prev => prev - 1)}
                                 className="px-8 py-3 rounded-xl border border-slate-200 text-slate-600 font-medium hover:bg-slate-50 transition-colors"
                             >
-                                ย้อนกลับ
+                                {t('back')}
                             </button>
                             <button
                                 onClick={handleNext}
                                 className="px-12 py-3 rounded-xl bg-brand-600 text-white font-medium shadow-lg hover:bg-brand-700 hover:shadow-xl transition-all active:scale-95"
                             >
-                                ถัดไป
+                                {t('next')}
                             </button>
                         </div>
                     </div>
@@ -836,13 +832,13 @@ function PostPropertyContent() {
                         <div className="bg-white rounded-2xl p-6 shadow-[0_4px_24px_rgba(0,0,0,0.06)] border border-slate-100 space-y-4">
                             <div className="flex items-center gap-2">
                                 <Layout size={24} className="text-slate-700" />
-                                <h2 className="text-xl font-bold text-slate-800">หัวข้อประกาศ <span className="text-red-500">*</span></h2>
+                                <h2 className="text-xl font-bold text-slate-800">{t('topicLabel')} <span className="text-red-500">*</span></h2>
                             </div>
                             <input
                                 type="text"
                                 value={topic}
                                 onChange={(e) => setTopic(e.target.value)}
-                                placeholder="เช่น คอนโดหรูติด BTS พร้อมอยู่ เฟอร์นิเจอร์ครบ (ไม่เกิน 100 ตัวอักษร)"
+                                placeholder={t('topicPlaceholder')}
                                 maxLength={100}
                                 className={`w-full px-4 py-3 rounded-xl border ${errors.topic ? 'border-red-500 focus:border-red-500 focus:ring-red-50' : 'border-slate-200 focus:border-brand-500 focus:ring-4 focus:ring-brand-50'} transition-all text-slate-700 placeholder:text-slate-300`}
                             />
@@ -857,12 +853,12 @@ function PostPropertyContent() {
                         <div className="bg-white rounded-2xl p-6 shadow-[0_4px_24px_rgba(0,0,0,0.06)] border border-slate-100 space-y-4">
                             <div className="flex items-center gap-2">
                                 <Info size={24} className="text-slate-700" />
-                                <h2 className="text-xl font-bold text-slate-800">รายละเอียด <span className="text-red-500">*</span></h2>
+                                <h2 className="text-xl font-bold text-slate-800">{t('descriptionLabel')} <span className="text-red-500">*</span></h2>
                             </div>
                             <textarea
                                 value={description}
                                 onChange={(e) => setDescription(e.target.value)}
-                                placeholder="อธิบายรายละเอียดเกี่ยวกับอสังหาริมทรัพย์ของคุณให้น่าสนใจ..."
+                                placeholder={t('descriptionPlaceholder')}
                                 rows={8}
                                 className={`w-full px-4 py-3 rounded-xl border ${errors.description ? 'border-red-500 focus:border-red-500 focus:ring-red-50' : 'border-slate-200 focus:border-brand-500 focus:ring-4 focus:ring-brand-50'} transition-all text-slate-700 placeholder:text-slate-300 resize-none`}
                             />
@@ -877,7 +873,7 @@ function PostPropertyContent() {
                         <div className="bg-white rounded-2xl p-6 shadow-[0_4px_24px_rgba(0,0,0,0.06)] border border-slate-100 space-y-6">
                             <div className="flex items-center gap-2 border-b border-slate-100 pb-4">
                                 <Layout size={24} className="text-slate-700" />
-                                <h2 className="text-xl font-bold text-slate-800">รายละเอียดอสังหาฯ <span className="text-red-500">*</span></h2>
+                                <h2 className="text-xl font-bold text-slate-800">{t('propertyDetailsLabel')} <span className="text-red-500">*</span></h2>
                             </div>
 
                             {/* Conditional Rendering based on Category */}
@@ -885,7 +881,7 @@ function PostPropertyContent() {
                                 <div className="space-y-4 animate-in fade-in slide-in-from-top-2">
                                     <div className="flex items-center gap-2 text-slate-700 font-medium">
                                         <Ruler size={20} />
-                                        <span>ขนาดที่ดิน</span>
+                                        <span>{t('landSize')}</span>
                                     </div>
                                     <div className="grid grid-cols-3 gap-4">
                                         <div className="relative group">
@@ -897,7 +893,7 @@ function PostPropertyContent() {
                                                 className="w-full pl-4 pr-12 py-3 rounded-xl border border-slate-200 focus:border-brand-500 focus:ring-4 focus:ring-brand-50 transition-all text-center font-bold text-lg text-slate-700 group-hover:border-brand-300"
                                                 placeholder="0"
                                             />
-                                            <span className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 text-sm font-medium">ไร่</span>
+                                            <span className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 text-sm font-medium">{t('rai')}</span>
                                         </div>
                                         <div className="relative group">
                                             <input
@@ -908,7 +904,7 @@ function PostPropertyContent() {
                                                 className="w-full pl-4 pr-12 py-3 rounded-xl border border-slate-200 focus:border-brand-500 focus:ring-4 focus:ring-brand-50 transition-all text-center font-bold text-lg text-slate-700 group-hover:border-brand-300"
                                                 placeholder="0"
                                             />
-                                            <span className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 text-sm font-medium">งาน</span>
+                                            <span className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 text-sm font-medium">{t('ngan')}</span>
                                         </div>
                                         <div className="relative group">
                                             <input
@@ -919,7 +915,7 @@ function PostPropertyContent() {
                                                 className="w-full pl-4 pr-12 py-3 rounded-xl border border-slate-200 focus:border-brand-500 focus:ring-4 focus:ring-brand-50 transition-all text-center font-bold text-lg text-slate-700 group-hover:border-brand-300"
                                                 placeholder="0"
                                             />
-                                            <span className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 text-sm font-medium">ตร.ว.</span>
+                                            <span className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 text-sm font-medium">{t('sqwah')}</span>
                                         </div>
                                     </div>
                                     {errors.landSize && (
@@ -934,7 +930,7 @@ function PostPropertyContent() {
                                         {/* Usable Area */}
                                         <div className="space-y-2">
                                             <label className="flex items-center gap-2 text-sm font-medium text-slate-700">
-                                                <Layout size={18} /> พื้นที่ใช้สอย <span className="text-red-500">*</span>
+                                                <Layout size={18} /> {t('usableArea')} <span className="text-red-500">*</span>
                                             </label>
                                             <div className={`relative flex items-center border rounded-xl overflow-hidden focus-within:ring-4 focus-within:ring-brand-50 transition-all h-[54px] bg-white ${errors.usableArea ? 'border-red-300 ring-4 ring-red-50' : 'border-slate-200 focus-within:border-brand-500'}`}>
                                                 <input
@@ -964,7 +960,7 @@ function PostPropertyContent() {
                                                 </div>
                                                 {/* Unit */}
                                                 <div className="px-4 text-sm text-slate-500 font-medium bg-slate-50 h-full flex items-center border-l border-slate-200 min-w-[3.5rem] justify-center">
-                                                    ตร.ม.
+                                                    {t('sqm')}
                                                 </div>
                                             </div>
                                         </div>
@@ -972,7 +968,7 @@ function PostPropertyContent() {
                                         {/* Floor */}
                                         <div className="space-y-2">
                                             <label className="flex items-center gap-2 text-sm font-medium text-slate-700">
-                                                <ArrowUp size={18} /> ชั้นที่ / จำนวนชั้น <span className="text-red-500">*</span>
+                                                <ArrowUp size={18} /> {t('floors')} <span className="text-red-500">*</span>
                                             </label>
                                             <div className={`relative flex items-center border rounded-xl overflow-hidden focus-within:ring-4 focus-within:ring-brand-50 transition-all h-[54px] bg-white ${errors.floors ? 'border-red-300 ring-4 ring-red-50' : 'border-slate-200 focus-within:border-brand-500'}`}>
                                                 <input
@@ -1000,7 +996,7 @@ function PostPropertyContent() {
                                                     </button>
                                                 </div>
                                                 <div className="px-4 text-sm text-slate-500 font-medium bg-slate-50 h-full flex items-center border-l border-slate-200 min-w-[3.5rem] justify-center">
-                                                    ชั้น
+                                                    {t('floorC')}
                                                 </div>
                                             </div>
                                         </div>
@@ -1010,7 +1006,7 @@ function PostPropertyContent() {
                                         {/* Bedroom */}
                                         <div className="space-y-2">
                                             <label className="flex items-center gap-2 text-sm font-medium text-slate-700">
-                                                <BedDouble size={18} /> ห้องนอน <span className="text-red-500">*</span>
+                                                <BedDouble size={18} /> {t('bedroom')} <span className="text-red-500">*</span>
                                             </label>
                                             <div className={`relative flex items-center border rounded-xl overflow-hidden focus-within:ring-4 focus-within:ring-brand-50 transition-all h-[54px] bg-white ${errors.bedroom ? 'border-red-300 ring-4 ring-red-50' : 'border-slate-200 focus-within:border-brand-500'}`}>
                                                 <input
@@ -1038,7 +1034,7 @@ function PostPropertyContent() {
                                                     </button>
                                                 </div>
                                                 <div className="px-4 text-sm text-slate-500 font-medium bg-slate-50 h-full flex items-center border-l border-slate-200 min-w-[3.5rem] justify-center">
-                                                    ห้อง
+                                                    {t('room')}
                                                 </div>
                                             </div>
                                         </div>
@@ -1046,7 +1042,7 @@ function PostPropertyContent() {
                                         {/* Bathroom */}
                                         <div className="space-y-2">
                                             <label className="flex items-center gap-2 text-sm font-medium text-slate-700">
-                                                <Bath size={18} /> ห้องน้ำ <span className="text-red-500">*</span>
+                                                <Bath size={18} /> {t('bathroom')} <span className="text-red-500">*</span>
                                             </label>
                                             <div className={`relative flex items-center border rounded-xl overflow-hidden focus-within:ring-4 focus-within:ring-brand-50 transition-all h-[54px] bg-white ${errors.bathroom ? 'border-red-300 ring-4 ring-red-50' : 'border-slate-200 focus-within:border-brand-500'}`}>
                                                 <input
@@ -1074,7 +1070,7 @@ function PostPropertyContent() {
                                                     </button>
                                                 </div>
                                                 <div className="px-4 text-sm text-slate-500 font-medium bg-slate-50 h-full flex items-center border-l border-slate-200 min-w-[3.5rem] justify-center">
-                                                    ห้อง
+                                                    {t('room')}
                                                 </div>
                                             </div>
                                         </div>
@@ -1082,7 +1078,7 @@ function PostPropertyContent() {
 
                                     {(errors.usableArea || errors.floors || errors.bedroom || errors.bathroom) && (
                                         <p className="text-red-500 text-sm mt-1 animate-in fade-in slide-in-from-top-1 font-medium bg-red-50 p-3 rounded-lg border border-red-100 flex items-center justify-center gap-2">
-                                            ⚠️ กรุณากรอกข้อมูลให้ครบถ้วน
+                                            ⚠️ {t('errFillAll')}
                                         </p>
                                     )}
                                 </div>
@@ -1091,20 +1087,29 @@ function PostPropertyContent() {
 
                         {/* 4. Highlights */}
                         <div className="bg-white rounded-2xl p-6 shadow-[0_4px_24px_rgba(0,0,0,0.06)] border border-slate-100 space-y-4">
-                            <h3 className="text-lg font-bold text-slate-800">จุดเด่นทรัพย์</h3>
+                            <h3 className="text-lg font-bold text-slate-800">{t('highlightsLabel')}</h3>
                             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                                {['ห้องมุม', 'วิวสวย', 'ตกแต่งสวย', 'พร้อมอยู่', 'เลี้ยงสัตว์ได้', 'ทิศเหนือ', 'ทิศใต้', 'ใกล้รถไฟฟ้า'].map((item) => (
-                                    <label key={item} className={`cursor-pointer border rounded-lg px-4 py-2.5 flex items-center justify-center gap-2 transition-all ${highlights.includes(item)
+                                {[
+                                    'cornerRoom',
+                                    'niceView',
+                                    'beautifulDecor',
+                                    'readyToMove',
+                                    'petFriendly',
+                                    'northFacing',
+                                    'southFacing',
+                                    'nearBTS'
+                                ].map((key) => (
+                                    <label key={key} className={`cursor-pointer border rounded-lg px-4 py-2.5 flex items-center justify-center gap-2 transition-all ${highlights.includes(key)
                                         ? 'bg-brand-50 border-brand-500 text-brand-700 font-medium shadow-sm'
                                         : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'
                                         }`}>
                                         <input
                                             type="checkbox"
                                             className="hidden"
-                                            checked={highlights.includes(item)}
-                                            onChange={() => toggleSelection(item, setHighlights)}
+                                            checked={highlights.includes(key)}
+                                            onChange={() => toggleSelection(key, setHighlights)}
                                         />
-                                        {item}
+                                        {t(key as any)}
                                     </label>
                                 ))}
                             </div>
@@ -1112,14 +1117,14 @@ function PostPropertyContent() {
 
                         {/* 5. Nearby Places */}
                         <div className="bg-white rounded-2xl p-6 shadow-[0_4px_24px_rgba(0,0,0,0.06)] border border-slate-100 space-y-4">
-                            <h3 className="text-lg font-bold text-slate-800">สถานที่ใกล้เคียง</h3>
+                            <h3 className="text-lg font-bold text-slate-800">{t('nearbyPlacesLabel')}</h3>
                             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                                 {[
-                                    { id: 'mall', label: 'ใกล้ห้าง', icon: ShoppingCart },
-                                    { id: 'train', label: 'ใกล้รถไฟฟ้า', icon: Train },
-                                    { id: 'school', label: 'ใกล้สถานศึกษา', icon: School },
-                                    { id: 'hospital', label: 'ใกล้โรงพยาบาล', icon: Hospital },
-                                    { id: 'airport', label: 'ใกล้สนามบิน', icon: Plane },
+                                    { id: 'mall', label: t('nearMall'), icon: ShoppingCart },
+                                    { id: 'train', label: t('nearTrain'), icon: Train },
+                                    { id: 'school', label: t('nearSchool'), icon: School },
+                                    { id: 'hospital', label: t('nearHospital'), icon: Hospital },
+                                    { id: 'airport', label: t('nearAirport'), icon: Plane },
                                 ].map((place) => (
                                     <label key={place.id} className={`cursor-pointer border rounded-lg px-4 py-3 flex flex-col items-center gap-2 transition-all h-24 justify-center ${nearbyPlaces.includes(place.id)
                                         ? 'bg-blue-50 border-blue-500 text-blue-700 shadow-sm'
@@ -1140,13 +1145,13 @@ function PostPropertyContent() {
 
                         {/* 6. Facilities */}
                         <div className="bg-white rounded-2xl p-6 shadow-[0_4px_24px_rgba(0,0,0,0.06)] border border-slate-100 space-y-4">
-                            <h3 className="text-lg font-bold text-slate-800">สิ่งอำนวยความสะดวก</h3>
+                            <h3 className="text-lg font-bold text-slate-800">{t('facilitiesLabel')}</h3>
                             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                                 {[
                                     { id: 'ev', label: 'EV Charger', icon: Zap },
                                     { id: 'wifi', label: 'Wi-Fi', icon: Wifi },
-                                    { id: 'parking', label: 'ที่จอดรถ', icon: Warehouse },
-                                    { id: 'pool', label: 'สระว่ายน้ำ', icon: Info },
+                                    { id: 'parking', label: t('parking'), icon: Warehouse },
+                                    { id: 'pool', label: t('pool'), icon: Info },
                                 ].map((fac) => (
                                     <label key={fac.id} className={`cursor-pointer border rounded-lg px-4 py-3 flex flex-col items-center gap-2 transition-all h-24 justify-center ${facilities.includes(fac.id)
                                         ? 'bg-brand-50 border-brand-500 text-brand-700 shadow-sm'
@@ -1172,7 +1177,7 @@ function PostPropertyContent() {
                                 className="px-6 py-3 rounded-xl border border-slate-200 text-slate-600 font-medium hover:bg-slate-50 transition-colors flex items-center gap-2"
                             >
                                 <ArrowLeft size={20} />
-                                ย้อนกลับ
+                                {t('back')}
                             </button>
 
                             <div className="flex gap-4">
@@ -1182,13 +1187,13 @@ function PostPropertyContent() {
                                     className="px-6 py-3 rounded-xl border border-slate-200 text-slate-600 font-medium hover:bg-slate-50 transition-colors flex items-center gap-2"
                                 >
                                     <Save size={20} />
-                                    {isSaving ? 'กำลังบันทึก...' : 'บันทึกร่าง'}
+                                    {isSaving ? t('saving') : t('saveDraft')}
                                 </button>
                                 <button
                                     onClick={handleNext}
                                     className="px-8 py-3 rounded-xl bg-brand-600 text-white font-medium shadow-lg hover:bg-brand-700 hover:shadow-xl transition-all active:scale-95"
                                 >
-                                    ถัดไป
+                                    {t('next')}
                                 </button>
                             </div>
                         </div>
@@ -1204,18 +1209,18 @@ function PostPropertyContent() {
                             <div className="bg-white rounded-2xl p-6 shadow-[0_4px_24px_rgba(0,0,0,0.06)] border border-slate-100 space-y-4">
                                 <div className="flex items-center gap-2">
                                     <Banknote size={24} className="text-slate-700" />
-                                    <h2 className="text-xl font-bold text-slate-800">ราคาขาย <span className="text-red-500">*</span></h2>
+                                    <h2 className="text-xl font-bold text-slate-800">{t('priceLabel')} <span className="text-red-500">*</span></h2>
                                 </div>
                                 <div className="relative">
                                     <input
                                         type="number"
                                         value={price}
                                         onChange={(e) => setPrice(e.target.value)}
-                                        placeholder="ระบุราคาที่ต้องการขาย"
+                                        placeholder={t('pricePlaceholder')}
                                         className="w-full pl-6 pr-16 py-4 rounded-xl border border-slate-200 focus:border-brand-500 focus:ring-4 focus:ring-brand-50 transition-all text-xl font-medium text-slate-800 placeholder:text-slate-300"
                                     />
                                     <div className="absolute right-6 top-1/2 -translate-y-1/2 text-slate-500 font-medium">
-                                        บาท
+                                        {t('baht')}
                                     </div>
                                 </div>
                                 {errors.price && (
@@ -1230,7 +1235,7 @@ function PostPropertyContent() {
                                 <div className="flex items-center justify-between">
                                     <div className="flex items-center gap-2">
                                         <User size={24} className="text-slate-700" />
-                                        <h2 className="text-xl font-bold text-slate-800">เปิดรับนายหน้า (ถ้ามี)</h2>
+                                        <h2 className="text-xl font-bold text-slate-800">{t('acceptAgentLabel')}</h2>
                                     </div>
                                     <button
                                         onClick={() => setAcceptAgent(!acceptAgent)}
@@ -1244,13 +1249,13 @@ function PostPropertyContent() {
                                     <div className="space-y-6 animate-in fade-in slide-in-from-top-2 duration-300">
                                         <div className="flex items-start gap-3 p-4 bg-brand-50 rounded-xl text-sm text-brand-700 border border-brand-100">
                                             <Info size={18} className="shrink-0 mt-0.5" />
-                                            <p>โปรดระบุค่าคอมมิชชั่นหากคุณเปิดรับนายหน้า เพื่อความชัดเจนในการตกลง</p>
+                                            <p>{t('commissionWarning')}</p>
                                         </div>
 
                                         <div className="border border-brand-200 rounded-xl p-6 bg-white space-y-4 shadow-sm">
                                             <div className="flex items-center gap-2 text-brand-700 font-semibold mb-2">
                                                 <div className="w-5 h-5 rounded-full bg-brand-100 flex items-center justify-center text-xs">✓</div>
-                                                ให้ค่าคอมมิชชั่น
+                                                {t('giveCommission')}
                                             </div>
 
                                             <div className="flex flex-col md:flex-row gap-4">
@@ -1264,7 +1269,7 @@ function PostPropertyContent() {
                                                             className="peer sr-only"
                                                         />
                                                         <div className="p-4 rounded-xl border border-slate-200 peer-checked:border-brand-500 peer-checked:bg-brand-50 transition-all h-full flex items-center justify-center gap-3 hover:bg-slate-50">
-                                                            <span className="text-slate-700 font-medium">เปอร์เซ็นต์ (%)</span>
+                                                            <span className="text-slate-700 font-medium">{t('percent')} (%)</span>
                                                         </div>
                                                     </div>
                                                 </label>
@@ -1278,7 +1283,7 @@ function PostPropertyContent() {
                                                             className="peer sr-only"
                                                         />
                                                         <div className="p-4 rounded-xl border border-slate-200 peer-checked:border-brand-500 peer-checked:bg-brand-50 transition-all h-full flex items-center justify-center gap-3 hover:bg-slate-50">
-                                                            <span className="text-slate-700 font-medium">จำนวนเงิน (บาท)</span>
+                                                            <span className="text-slate-700 font-medium">{t('amount')} ({t('baht')})</span>
                                                         </div>
                                                     </div>
                                                 </label>
@@ -1292,7 +1297,7 @@ function PostPropertyContent() {
                                                             className="peer sr-only"
                                                         />
                                                         <div className="p-4 rounded-xl border border-slate-200 peer-checked:border-brand-500 peer-checked:bg-brand-50 transition-all h-full flex items-center justify-center gap-3 hover:bg-slate-50">
-                                                            <span className="text-slate-700 font-medium">ตามตกลง</span>
+                                                            <span className="text-slate-700 font-medium">{t('asAgreed')}</span>
                                                         </div>
                                                     </div>
                                                 </label>
@@ -1304,11 +1309,11 @@ function PostPropertyContent() {
                                                         type="number"
                                                         value={commissionRate}
                                                         onChange={(e) => setCommissionRate(e.target.value)}
-                                                        placeholder={commissionType === 'percent' ? "เช่น 3" : "ระบุจำนวนเงิน"}
+                                                        placeholder={commissionType === 'percent' ? t('percentPlaceholder') : t('amountPlaceholder')}
                                                         className={`w-full pl-6 pr-16 py-3 rounded-xl border ${errors.commissionRate ? 'border-red-500 focus:border-red-500 focus:ring-red-50' : 'border-slate-200 focus:border-brand-500 focus:ring-4 focus:ring-brand-50'} transition-all`}
                                                     />
                                                     <div className="absolute right-6 top-1/2 -translate-y-1/2 text-slate-500 font-medium">
-                                                        {commissionType === 'percent' ? '%' : 'บาท'}
+                                                        {commissionType === 'percent' ? '%' : t('baht')}
                                                     </div>
                                                 </div>
                                             )}
@@ -1322,7 +1327,7 @@ function PostPropertyContent() {
                                             {commissionType === 'percent' && price && commissionRate && (
                                                 <div className="flex justify-end items-center gap-2 text-brand-700 font-bold text-lg animate-in fade-in bg-brand-50 px-4 py-2 rounded-lg w-fit ml-auto">
                                                     <Wallet size={20} />
-                                                    <span>ค่าคอมมิชชั่นโดยประมาณ: {((parseFloat(price) * parseFloat(commissionRate)) / 100).toLocaleString()} บาท</span>
+                                                    <span>{t('estimatedCommission')}: {((parseFloat(price) * parseFloat(commissionRate)) / 100).toLocaleString()} {t('baht')}</span>
                                                 </div>
                                             )}
                                         </div>
@@ -1334,12 +1339,12 @@ function PostPropertyContent() {
                             <div className="bg-white rounded-2xl p-6 shadow-[0_4px_24px_rgba(0,0,0,0.06)] border border-slate-100 space-y-4">
                                 <div className="flex items-center gap-2">
                                     <FileText size={24} className="text-slate-700" />
-                                    <h2 className="text-xl font-bold text-slate-800">หมายเหตุ (ถ้ามี)</h2>
+                                    <h2 className="text-xl font-bold text-slate-800">{t('noteLabel')}</h2>
                                 </div>
                                 <textarea
                                     value={note}
                                     onChange={(e) => setNote(e.target.value)}
-                                    placeholder="รายละเอียดเพิ่มเติมสำหรับแอดมิน (ข้อความนี้จะไม่แสดงในหน้าประกาศ)"
+                                    placeholder={t('notePlaceholder')}
                                     rows={4}
                                     className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-brand-500 focus:ring-4 focus:ring-brand-50 transition-all text-slate-700 placeholder:text-slate-300 resize-none"
                                 />
@@ -1355,7 +1360,7 @@ function PostPropertyContent() {
                                     className="px-6 py-3 rounded-xl border border-slate-200 text-slate-600 font-medium hover:bg-slate-50 transition-colors flex items-center gap-2 hover:shadow-md"
                                 >
                                     <ArrowLeft size={20} />
-                                    ย้อนกลับ
+                                    {t('back')}
                                 </button>
 
                                 <div className="flex gap-4">
@@ -1365,14 +1370,14 @@ function PostPropertyContent() {
                                         className="px-6 py-3 rounded-xl border border-slate-200 text-slate-600 font-medium hover:bg-slate-50 transition-colors flex items-center gap-2 hover:shadow-md"
                                     >
                                         <Save size={20} />
-                                        {isSaving ? 'กำลังบันทึก...' : 'บันทึกร่าง'}
+                                        {isSaving ? t('saving') : t('saveDraft')}
                                     </button>
                                     <button
                                         onClick={handlePublish}
                                         disabled={isSaving}
                                         className="px-8 py-3 rounded-xl bg-brand-600 text-white font-bold shadow-lg hover:bg-brand-700 hover:shadow-brand-200 transition-all active:scale-95 flex items-center gap-2 shadow-brand-100"
                                     >
-                                        {isSaving ? 'กำลังบันทึก...' : 'เผยแพร่ !'}
+                                        {isSaving ? t('saving') : t('publish')}
                                     </button>
                                 </div>
                             </div>
