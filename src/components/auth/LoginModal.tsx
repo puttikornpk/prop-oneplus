@@ -187,11 +187,11 @@ export function LoginModal({ isOpen, onClose, onSwitchToRegister }: LoginModalPr
 
     return createPortal(
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200">
-            <div className={`w-full max-w-md bg-white rounded-2xl shadow-2xl relative animate-in zoom-in-95 duration-200 overflow-hidden ${step === 3 ? 'bg-[#D6F5E8]' : ''}`} onClick={e => e.stopPropagation()}>
+            <div className={`w-full max-w-md bg-white rounded-2xl shadow-2xl relative animate-in zoom-in-95 duration-200 overflow-hidden ${step === 3 ? 'bg-brand-50' : ''}`} onClick={e => e.stopPropagation()}>
 
                 {step === 3 ? (
-                    // Activation Step UI (Green Background)
-                    <div className="bg-[#D6F5E8] p-8 min-h-[400px] flex flex-col items-center text-center">
+                    // Activation Step UI (Brand Background)
+                    <div className="bg-brand-50 p-8 min-h-[400px] flex flex-col items-center text-center">
                         <div className="w-full flex justify-end">
                             <button onClick={onClose} className="text-slate-500 hover:text-slate-700">
                                 <X size={24} />
@@ -202,15 +202,14 @@ export function LoginModal({ isOpen, onClose, onSwitchToRegister }: LoginModalPr
 
                         <form onSubmit={handleVerifyToken} className="w-full space-y-4">
                             <div className="text-left">
-                                <label className="text-[#20B486] text-sm mb-1 block">{t('activationLabel')}</label>
+                                <label className="text-brand-600 text-sm mb-1 block">{t('activationLabel')}</label>
                                 <div className="relative">
                                     <Shield className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
                                     <input
                                         type="text"
                                         value={activationCode}
                                         onChange={(e) => setActivationCode(e.target.value)}
-                                        className="w-full pl-10 pr-4 py-2 border border-red-300 rounded bg-[#E8F0EE] focus:outline-none focus:border-brand-500 text-slate-700"
-                                    // Note: matched style loosely to image (grayish/greenish input background)
+                                        className="w-full pl-10 pr-4 py-2 border border-slate-300 rounded bg-white focus:outline-none focus:border-brand-500 text-slate-700"
                                     />
                                 </div>
                             </div>
@@ -222,7 +221,7 @@ export function LoginModal({ isOpen, onClose, onSwitchToRegister }: LoginModalPr
                             <button
                                 type="submit"
                                 disabled={isLoading}
-                                className="w-full bg-[#2DB696] hover:bg-[#209f80] text-white font-medium py-3 rounded-xl shadow-lg mt-4 transition-colors"
+                                className="w-full bg-brand-500 hover:bg-brand-600 text-white font-medium py-3 rounded-xl shadow-lg mt-4 transition-colors"
                             >
                                 {isLoading ? t('processing') : t('activationConfirm')}
                             </button>

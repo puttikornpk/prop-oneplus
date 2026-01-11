@@ -261,7 +261,7 @@ export function RegisterModal({ isOpen, onClose, onSwitchToLogin }: RegisterModa
                                 className="w-5 h-5 rounded border-brand-300 text-brand-600 focus:ring-brand-500"
                             />
                             <label htmlFor="terms" className="text-slate-700">
-                                {t('acceptTermsLabel')} <button type="button" onClick={() => setIsTermsOpen(true)} className="underline text-[#248D9E] font-medium hover:text-[#1d7482]">{t('clickHere')}</button> {t('readTerms')}
+                                {t('acceptTermsLabel')} <button type="button" onClick={() => setIsTermsOpen(true)} className="underline text-brand-600 font-medium hover:text-brand-700">{t('clickHere')}</button> {t('readTerms')}
                             </label>
                         </div>
 
@@ -282,7 +282,7 @@ export function RegisterModal({ isOpen, onClose, onSwitchToLogin }: RegisterModa
                         </button>
 
                         <div className="text-center text-slate-600 mt-4 pb-2">
-                            {t('alreadyHaveAccount')} <button type="button" onClick={onSwitchToLogin} className="text-[#3AB0FF] underline">{t('loginLink')}</button>
+                            {t('alreadyHaveAccount')} <button type="button" onClick={onSwitchToLogin} className="text-brand-500 underline hover:text-brand-600">{t('loginLink')}</button>
                         </div>
                     </form>
                 </div>
@@ -314,7 +314,7 @@ export function RegisterModal({ isOpen, onClose, onSwitchToLogin }: RegisterModa
                             <div className="border-t border-slate-100 my-4"></div>
 
                             <div className="space-y-4">
-                                <h4 className="font-bold text-lg text-slate-800 border-l-4 border-blue-500 pl-3">English</h4>
+                                <h4 className="font-bold text-lg text-slate-800 border-l-4 border-brand-500 pl-3">English</h4>
                                 <p>Welcome to PropertyOnePlus (the "Platform"). By accessing and using this Platform, you agree to the following terms and conditions:</p>
                                 <ul className="list-disc pl-5 space-y-2">
                                     <li><strong>1. Purpose:</strong> The Platform serves as an intermediary for users wishing to buy, sell, or rent real estate properties such as houses, condos, and land.</li>
