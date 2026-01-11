@@ -73,6 +73,7 @@ export function PropertyDetailClient({ property, currentUser }: PropertyDetailCl
                                     alt={property.topic}
                                     fill
                                     className="object-cover transition-transform duration-500 group-hover:scale-105"
+                                    unoptimized
                                 />
                                 <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors flex items-center justify-center">
                                     <span className="opacity-0 group-hover:opacity-100 bg-black/50 text-white px-4 py-2 rounded-full backdrop-blur-sm transition-opacity">
@@ -98,7 +99,7 @@ export function PropertyDetailClient({ property, currentUser }: PropertyDetailCl
                                             className={`relative w-20 h-20 flex-shrink-0 rounded-lg overflow-hidden border-2 transition-all ${activeImageIndex === idx ? 'border-brand-600 ring-2 ring-brand-100' : 'border-transparent opacity-70 hover:opacity-100'
                                                 }`}
                                         >
-                                            <Image src={img.url} alt={`Thumbnail ${idx}`} fill className="object-cover" />
+                                            <Image src={img.url} alt={`Thumbnail ${idx}`} fill className="object-cover" unoptimized />
                                         </button>
                                     ))}
                                 </div>
@@ -361,6 +362,7 @@ export function PropertyDetailClient({ property, currentUser }: PropertyDetailCl
                                         alt={`Image ${activeImageIndex + 1}`}
                                         fill
                                         className="object-contain"
+                                        unoptimized
                                     />
                                 </div>
 
