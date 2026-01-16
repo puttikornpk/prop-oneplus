@@ -13,6 +13,8 @@ export const translations = {
     myProperties: { TH: "ประกาศของฉัน", EN: "My Properties" },
     editProfile: { TH: "แก้ไขข้อมูลส่วนตัว", EN: "Edit Profile" },
     contactSupport: { TH: "ติดต่อเจ้าหน้าที่", EN: "Contact Support" },
+    confirmDelete: { TH: "คุณแน่ใจหรือไม่ว่าต้องการลบประกาศนี้?", EN: "Are you sure you want to delete this property?" },
+    confirmDeleteTitle: { TH: "ยืนยันการลบ", EN: "Confirm Delete" },
     topUp: { TH: "เติมเครดิต", EN: "Top Up" },
 
     // Sidebar
@@ -73,6 +75,21 @@ export const translations = {
     SOLD: { TH: "ขายแล้ว", EN: "Sold" },
     ARCHIVED: { TH: "ปิดประกาศ", EN: "Archived" },
     EXPIRED: { TH: "หมดอายุ", EN: "Expired" },
+
+    // Property Types (Extended)
+    apartment: { TH: "อพาร์ทเมนท์", EN: "Apartment" },
+    twinHouse: { TH: "บ้านแฝด", EN: "Twin House" },
+    townhome: { TH: "ทาวน์โฮม", EN: "Townhome" },
+    homeOffice: { TH: "โฮมออฟฟิศ", EN: "Home Office" },
+    poolVilla: { TH: "พูลวิลล่า", EN: "Pool Villa" },
+    commercialBuilding: { TH: "อาคารพาณิชย์", EN: "Commercial Building" },
+    office: { TH: "สำนักงาน", EN: "Office" },
+    factory: { TH: "โรงงาน", EN: "Factory" },
+    showroom: { TH: "โชว์รูม", EN: "Showroom" },
+    warehouse: { TH: "โกดัง", EN: "Warehouse" },
+    hotelResort: { TH: "โรงแรม / รีสอร์ท", EN: "Hotel / Resort" },
+    coWorking: { TH: "Co-working Space", EN: "Co-working Space" },
+    shopMarket: { TH: "ร้านค้า / ตลาด", EN: "Shop / Market" },
 
     // Property Detail Page
     breadcrumbsHome: { TH: "หน้าแรก", EN: "Home" },
@@ -238,6 +255,9 @@ export const translations = {
     errFloors: { TH: "กรุณาระบุชั้นหรือจำนวนชั้น", EN: "Please enter number of floors" },
     errPrice: { TH: "กรุณาระบุราคาขาย", EN: "Please enter price" },
     errCommission: { TH: "กรุณาระบุค่าคอมมิชชั่น", EN: "Please enter commission" },
+    errMaxFiles: { TH: "คุณสามารถอัปโหลดรูปภาพได้สูงสุด 20 รูป", EN: "You can upload a maximum of 20 images." },
+    errFileSize: { TH: "บางไฟล์มีขนาดเกิน 5MB และถูกข้ามไป", EN: "Some files exceed the 5MB limit and were skipped." },
+    errTotalSize: { TH: "ขนาดไฟล์รวมทั้งหมดเกิน 100MB", EN: "Total file size exceeds 100MB." },
     errFillAll: { TH: "กรุณากรอกข้อมูลให้ครบถ้วน", EN: "Please fill all required fields" },
 
     category: { TH: "หมวดหมู่", EN: "Category" },

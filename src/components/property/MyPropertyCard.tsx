@@ -4,6 +4,8 @@ import { useRouter } from 'next/navigation';
 import { Settings, FileText, MapPin, Trash2 } from 'lucide-react';
 import { CreateNoteModal } from './CreateNoteModal';
 import { useLanguage } from '@/context/LanguageContext';
+import { AlertModal } from '@/components/ui/AlertModal';
+import { PageLoader } from '@/components/ui/PageLoader';
 
 // Minimal interface to satisfy TypeScript for now.
 // In a real app, importing Prisma types or a shared DTO is better.
@@ -26,9 +28,10 @@ interface PropertyData {
 
 interface MyPropertyCardProps {
     property: PropertyData;
+    onRefresh?: () => void;
 }
 
-export const MyPropertyCard: React.FC<MyPropertyCardProps> = ({ property }) => {
+export const MyPropertyCard: React.FC<MyPropertyCardProps> = ({ property, onRefresh }) => {
     const router = useRouter();
     const { t, formatDate } = useLanguage();
 
@@ -41,6 +44,20 @@ export const MyPropertyCard: React.FC<MyPropertyCardProps> = ({ property }) => {
 
     const [isMenuOpen, setIsMenuOpen] = React.useState(false);
     const [isNoteOpen, setIsNoteOpen] = React.useState(false);
+    const [isProcessing, setIsProcessing] = React.useState(false);
+
+    // Alert State
+    const [alertConfig, setAlertConfig] = React.useState<{
+        isOpen: boolean;
+        title: string;
+        message: string;
+        actionLabel?: string;
+        showCancel?: boolean;
+        cancelLabel?: string;
+        onConfirm?: () => void;
+        onClose?: () => void;
+    }>({ isOpen: false, title: '', message: '' });
+
     const menuRef = React.useRef<HTMLDivElement>(null);
 
     React.useEffect(() => {
@@ -58,6 +75,7 @@ export const MyPropertyCard: React.FC<MyPropertyCardProps> = ({ property }) => {
 
     const handleCreateNote = async (data: { topic: string; detail: string; images: File[]; existingImages: string[] }) => {
         try {
+            setIsProcessing(true);
             // 1. Upload Images
             let imageUrls: string[] = [];
             if (data.images.length > 0) {
@@ -90,45 +108,91 @@ export const MyPropertyCard: React.FC<MyPropertyCardProps> = ({ property }) => {
             });
 
             if (res.ok) {
-                alert('บันทึกโน้ตเรียบร้อย');
-                setIsNoteOpen(false);
-                // Ideally refresh property data or list here
+                setAlertConfig({
+                    isOpen: true,
+                    title: 'สำเร็จ',
+                    message: 'บันทึกโน้ตเรียบร้อย',
+                    onClose: () => {
+                        setIsNoteOpen(false);
+                        if (onRefresh) onRefresh();
+                    }
+                });
+
             } else {
                 const text = await res.text();
                 try {
                     const err = JSON.parse(text);
                     console.error("Save note error:", err);
-                    alert(`Failed to save note: ${err.details || err.error || 'Unknown error'}`);
+                    setAlertConfig({
+                        isOpen: true,
+                        title: 'เกิดข้อผิดพลาด',
+                        message: `Failed to save note: ${err.details || err.error || 'Unknown error'}`
+                    });
                 } catch (e) {
                     console.error("Save note non-JSON error:", text);
-                    alert(`Failed to save note: ${res.status} ${res.statusText}`);
+                    setAlertConfig({
+                        isOpen: true,
+                        title: 'เกิดข้อผิดพลาด',
+                        message: `Failed to save note: ${res.status} ${res.statusText}`
+                    });
                 }
             }
 
         } catch (error) {
             console.error("Error saving note:", error);
-            alert("An error occurred while saving the note");
+            setAlertConfig({
+                isOpen: true,
+                title: 'เกิดข้อผิดพลาด',
+                message: "An error occurred while saving the note"
+            });
+        } finally {
+            setIsProcessing(false);
         }
     };
 
-    const handleDelete = async () => {
-        if (!confirm(t('confirmDelete'))) return;
-
+    const executeDelete = async () => {
         try {
+            setIsProcessing(true);
             const res = await fetch(`/api/properties?id=${property.id}`, {
                 method: 'DELETE'
             });
 
             if (res.ok) {
-                window.location.reload();
+                setAlertConfig({ isOpen: false, title: '', message: '' }); // Close confirm modal
+                if (onRefresh) {
+                    onRefresh();
+                } else {
+                    window.location.reload();
+                }
             } else {
                 const errorData = await res.json();
-                alert(`Failed to delete: ${res.status} ${res.statusText} - ${errorData.error}`);
+                setAlertConfig({
+                    isOpen: true,
+                    title: 'เกิดข้อผิดพลาด',
+                    message: `Failed to delete: ${res.status} ${res.statusText} - ${errorData.error}`
+                });
             }
         } catch (error) {
             console.error('Error deleting property:', error);
-            alert(`An error occurred: ${String(error)}`);
+            setAlertConfig({
+                isOpen: true,
+                title: 'เกิดข้อผิดพลาด',
+                message: `An error occurred: ${String(error)}`
+            });
+        } finally {
+            setIsProcessing(false);
         }
+    }
+
+    const handleDelete = async () => {
+        setAlertConfig({
+            isOpen: true,
+            title: t('confirmDeleteTitle') || 'ยืนยันการลบ',
+            message: t('confirmDelete') || 'คุณแน่ใจหรือไม่ว่าต้องการลบประกาศนี้?',
+            actionLabel: 'ลบประกาศ',
+            showCancel: true,
+            onConfirm: executeDelete
+        });
     };
 
     return (
@@ -286,6 +350,7 @@ export const MyPropertyCard: React.FC<MyPropertyCardProps> = ({ property }) => {
                         </div>
 
                         <button
+                            disabled={property.status === 'ACTIVE'}
                             onClick={async () => {
                                 try {
                                     const res = await fetch(`/api/properties?id=${property.id}`, {
@@ -298,14 +363,25 @@ export const MyPropertyCard: React.FC<MyPropertyCardProps> = ({ property }) => {
                                         router.push(`/property/${property.id}`);
                                     } else {
                                         const err = await res.json();
-                                        alert(`Failed to publish: ${err.error || 'Unknown error'}`);
+                                        setAlertConfig({
+                                            isOpen: true,
+                                            title: 'เกิดข้อผิดพลาด',
+                                            message: `Failed to publish: ${err.error || 'Unknown error'}`
+                                        });
                                     }
                                 } catch (e) {
                                     console.error("Publish error:", e);
-                                    alert("An error occurred while publishing.");
+                                    setAlertConfig({
+                                        isOpen: true,
+                                        title: 'เกิดข้อผิดพลาด',
+                                        message: "An error occurred while publishing."
+                                    });
                                 }
                             }}
-                            className="flex items-center gap-1 px-6 py-1.5 rounded-lg bg-brand-600 text-white text-sm font-bold hover:bg-brand-700 transition-colors shadow-sm"
+                            className={`flex items-center gap-1 px-6 py-1.5 rounded-lg text-sm font-bold transition-colors shadow-sm ${property.status === 'ACTIVE'
+                                ? 'bg-slate-100 text-slate-400 cursor-not-allowed border border-slate-200'
+                                : 'bg-brand-600 text-white hover:bg-brand-700'
+                                }`}
                         >
                             {t('publish')}
                         </button>
@@ -323,6 +399,23 @@ export const MyPropertyCard: React.FC<MyPropertyCardProps> = ({ property }) => {
                     images: property.noteImages as string[] || []
                 }}
             />
+
+            {/* Alert Modal */}
+            <AlertModal
+                isOpen={alertConfig.isOpen}
+                onClose={() => {
+                    setAlertConfig(prev => ({ ...prev, isOpen: false }));
+                    if (alertConfig.onClose) alertConfig.onClose();
+                }}
+                title={alertConfig.title}
+                message={alertConfig.message}
+                actionLabel={alertConfig.actionLabel}
+                showCancel={alertConfig.showCancel}
+                cancelLabel={alertConfig.cancelLabel}
+                onConfirm={alertConfig.onConfirm}
+            />
+
+            {isProcessing && <PageLoader />}
         </div>
     );
 };

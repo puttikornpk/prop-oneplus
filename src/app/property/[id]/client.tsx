@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer"; // Assuming Footer exists
-import { User, MapPin, Phone, MessageCircle, Share2, Heart, Flag, CheckCircle2, Download, Layout, ArrowUp, BedDouble, Bath, LandPlot, Layers, ChevronDown, ChevronUp } from "lucide-react";
+import { User, MapPin, Phone, MessageCircle, Share2, Heart, Flag, CheckCircle2, Download, Layout, ArrowUp, BedDouble, Bath, LandPlot, Layers, ChevronDown, ChevronUp, Sparkles, Maximize, Mountain, Palette, Key, PawPrint, Compass, Train, ShoppingBag, School, Hospital, Plane, Car, Waves, Zap, Wifi } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 
@@ -245,6 +245,181 @@ export function PropertyDetailClient({ property, currentUser }: PropertyDetailCl
                                 </button>
                             )}
                         </div>
+
+                        {/* Highlights */}
+                        {(() => {
+                            const highlightMap: Record<string, string> = {
+                                'ห้องมุม': 'cornerRoom',
+                                'วิวสวย': 'niceView',
+                                'ตกแต่งสวย': 'beautifulDecor',
+                                'พร้อมอยู่': 'readyToMove',
+                                'เลี้ยงสัตว์ได้': 'petFriendly',
+                                'ทิศเหนือ': 'northFacing',
+                                'ทิศใต้': 'southFacing',
+                                'ใกล้รถไฟฟ้า': 'nearBTS',
+                                // Fallback English keys if DB has them instead
+                                'Corner Room': 'cornerRoom',
+                                'Nice View': 'niceView',
+                                'Beautiful Decor': 'beautifulDecor',
+                                'Ready to Move': 'readyToMove',
+                                'Pet Friendly': 'petFriendly',
+                                'North Facing': 'northFacing',
+                                'South Facing': 'southFacing',
+                                'Near BTS/MRT': 'nearBTS'
+                            };
+
+                            const highlights = property.facilities
+                                ?.filter((f: any) => f.facility.type === 'HIGHLIGHT')
+                                .map((f: any) => {
+                                    const key = highlightMap[f.facility.name] || (Object.values(highlightMap).includes(f.facility.name) ? f.facility.name : null);
+                                    return key || f.facility.name;
+                                }) || [];
+
+                            if (highlights.length === 0) return null;
+
+                            return (
+                                <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
+                                    <h2 className="text-xl font-bold text-slate-800 mb-4 flex items-center gap-2">
+                                        <Sparkles className="text-brand-600" /> {t('highlightsLabel')}
+                                    </h2>
+                                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                        {highlights.map((key: string) => {
+                                            const iconMap: any = {
+                                                'cornerRoom': <Maximize size={20} />,
+                                                'niceView': <Mountain size={20} />,
+                                                'beautifulDecor': <Palette size={20} />,
+                                                'readyToMove': <Key size={20} />,
+                                                'petFriendly': <PawPrint size={20} />,
+                                                'northFacing': <Compass size={20} />,
+                                                'southFacing': <Compass size={20} className="rotate-180" />,
+                                                'nearBTS': <Train size={20} />
+                                            };
+
+                                            // Handle case where key is not mapped to an icon (custom highlight)
+                                            const DisplayIcon = iconMap[key] || <CheckCircle2 size={20} />;
+
+                                            return (
+                                                <div key={key} className="flex items-center gap-3 p-3 rounded-xl bg-brand-50/50 border border-brand-100">
+                                                    <div className="text-brand-600 bg-white p-1.5 rounded-lg shadow-sm">
+                                                        {DisplayIcon}
+                                                    </div>
+                                                    <span className="font-medium text-slate-700 text-sm">{t(key as any)}</span>
+                                                </div>
+                                            )
+                                        })}
+                                    </div>
+                                </div>
+                            );
+                        })()}
+
+                        {/* Nearby Places */}
+                        {(() => {
+                            const nearbyMap: Record<string, string> = {
+                                'ใกล้ห้าง': 'nearMall',
+                                'ใกล้รถไฟฟ้า': 'nearTrain',
+                                'ใกล้สถานศึกษา': 'nearSchool',
+                                'ใกล้โรงพยาบาล': 'nearHospital',
+                                'ใกล้สนามบิน': 'nearAirport',
+                                // Fallback
+                                'Near Mall': 'nearMall',
+                                'Near BTS/MRT': 'nearTrain',
+                                'Near School': 'nearSchool',
+                                'Near Hospital': 'nearHospital',
+                                'Near Airport': 'nearAirport'
+                            };
+
+                            const nearby = property.facilities
+                                ?.filter((f: any) => f.facility.type === 'NEARBY')
+                                .map((f: any) => {
+                                    const key = nearbyMap[f.facility.name] || (Object.values(nearbyMap).includes(f.facility.name) ? f.facility.name : null);
+                                    return key || f.facility.name;
+                                }) || [];
+
+                            if (nearby.length === 0) return null;
+
+                            return (
+                                <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
+                                    <h2 className="text-xl font-bold text-slate-800 mb-4 flex items-center gap-2">
+                                        <MapPin className="text-brand-600" /> {t('nearbyPlacesLabel')}
+                                    </h2>
+                                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                                        {nearby.map((key: string) => {
+                                            const iconMap: any = {
+                                                'nearMall': <ShoppingBag size={20} />,
+                                                'nearTrain': <Train size={20} />,
+                                                'nearSchool': <School size={20} />,
+                                                'nearHospital': <Hospital size={20} />,
+                                                'nearAirport': <Plane size={20} />
+                                            };
+
+                                            const DisplayIcon = iconMap[key] || <MapPin size={20} />;
+
+                                            return (
+                                                <div key={key} className="flex items-center gap-3 p-3 rounded-xl bg-orange-50/50 border border-orange-100">
+                                                    <div className="text-orange-600 bg-white p-1.5 rounded-lg shadow-sm">
+                                                        {DisplayIcon}
+                                                    </div>
+                                                    <span className="font-medium text-slate-700 text-sm">{t(key as any)}</span>
+                                                </div>
+                                            )
+                                        })}
+                                    </div>
+                                </div>
+                            );
+                        })()}
+
+                        {/* Facilities */}
+                        {(() => {
+                            const facilityMap: Record<string, string> = {
+                                'ที่จอดรถ': 'parking',
+                                'สระว่ายน้ำ': 'pool',
+                                'Wi-Fi': 'wifi',
+                                'EV Charger': 'ev',
+                                // Fallback
+                                'Parking': 'parking',
+                                'Swimming Pool': 'pool',
+                                'Wifi': 'wifi',
+                                'EV': 'ev'
+                            };
+
+                            const facilities = property.facilities
+                                ?.filter((f: any) => f.facility.type === 'FACILITY')
+                                .map((f: any) => {
+                                    const key = facilityMap[f.facility.name] || (Object.values(facilityMap).includes(f.facility.name) ? f.facility.name : null);
+                                    return key || f.facility.name;
+                                }) || [];
+
+                            if (facilities.length === 0) return null;
+
+                            return (
+                                <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
+                                    <h2 className="text-xl font-bold text-slate-800 mb-4 flex items-center gap-2">
+                                        <Layout className="text-brand-600" /> {t('facilitiesLabel')}
+                                    </h2>
+                                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                        {facilities.map((key: string) => {
+                                            const iconMap: any = {
+                                                'parking': <Car size={20} />,
+                                                'pool': <Waves size={20} />,
+                                                'wifi': <Wifi size={20} />,
+                                                'ev': <Zap size={20} />
+                                            };
+
+                                            const DisplayIcon = iconMap[key] || <CheckCircle2 size={20} />;
+
+                                            return (
+                                                <div key={key} className="flex items-center gap-3 p-3 rounded-xl bg-green-50/50 border border-green-100">
+                                                    <div className="text-green-600 bg-white p-1.5 rounded-lg shadow-sm">
+                                                        {DisplayIcon}
+                                                    </div>
+                                                    <span className="font-medium text-slate-700 text-sm">{t(key as any)}</span>
+                                                </div>
+                                            )
+                                        })}
+                                    </div>
+                                </div>
+                            );
+                        })()}
 
                         {/* Location / Map */}
                         <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100">

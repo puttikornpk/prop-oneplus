@@ -1,5 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { X, Plus, Image as ImageIcon } from 'lucide-react';
+import { AlertModal } from '@/components/ui/AlertModal';
 
 interface NoteData {
     topic: string;
@@ -24,6 +25,14 @@ export const CreateNoteModal: React.FC<CreateNoteModalProps> = ({ isOpen, onClos
     const [expandedImage, setExpandedImage] = useState<string | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
+    // Alert State
+    const [alertConfig, setAlertConfig] = useState<{
+        isOpen: boolean;
+        title: string;
+        message: string;
+        onClose?: () => void;
+    }>({ isOpen: false, title: '', message: '' });
+
     // Initialize state when opening
     React.useEffect(() => {
         if (isOpen) {
@@ -43,15 +52,28 @@ export const CreateNoteModal: React.FC<CreateNoteModalProps> = ({ isOpen, onClos
             const newFiles = Array.from(e.target.files);
 
             // Validate Max 5 Images
-            if (images.length + newFiles.length > 5) {
-                alert('อัปโหลดรูปได้ไม่เกิน 5 รูป');
+            const totalImages = existingImages.length + images.length + newFiles.length;
+            if (totalImages > 5) {
+                setAlertConfig({
+                    isOpen: true,
+                    title: 'ข้อผิดพลาด',
+                    message: 'อัปโหลดรูปได้ไม่เกิน 5 รูป',
+                });
+                // Reset input
+                e.target.value = '';
                 return;
             }
 
             // Validate File Size (Max 3MB)
             const invalidFiles = newFiles.filter(file => file.size > 3 * 1024 * 1024);
             if (invalidFiles.length > 0) {
-                alert('ไฟล์รูปภาพต้องมีขนาดไม่เกิน 3MB และรวมกันไม่เกิน 15MB');
+                setAlertConfig({
+                    isOpen: true,
+                    title: 'ข้อผิดพลาด',
+                    message: 'ไฟล์รูปภาพต้องมีขนาดไม่เกิน 3MB',
+                });
+                // Reset input
+                e.target.value = '';
                 return;
             }
 
@@ -59,12 +81,20 @@ export const CreateNoteModal: React.FC<CreateNoteModalProps> = ({ isOpen, onClos
 
             const newUrls = newFiles.map(file => URL.createObjectURL(file));
             setPreviewUrls(prev => [...prev, ...newUrls]);
+
+            // Reset input so same file can be selected again if needed (though we just added it)
+            // or to clear the UI state.
+            e.target.value = '';
         }
     };
 
     const handleRemoveImage = (index: number) => {
         setImages(prev => prev.filter((_, i) => i !== index));
         setPreviewUrls(prev => prev.filter((_, i) => i !== index));
+    };
+
+    const handleRemoveExistingImage = (index: number) => {
+        setExistingImages(prev => prev.filter((_, i) => i !== index));
     };
 
     const handleSubmit = () => {
@@ -158,11 +188,15 @@ export const CreateNoteModal: React.FC<CreateNoteModalProps> = ({ isOpen, onClos
                                         className="w-full h-full object-cover cursor-pointer hover:opacity-90 transition-opacity"
                                         onClick={() => setExpandedImage(url)}
                                     />
-                                    {/* Note: We don't support deleting existing images in this simple Modal yet, 
-                                        unless we track deleted URLs. For now, assume append-only or simple clear?
-                                        User asked for persistence. Let's just show them. 
-                                        If deletion is needed, that's a bigger change (tracking deletions).
-                                    */}
+                                    <button
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            handleRemoveExistingImage(index);
+                                        }}
+                                        className="absolute top-1 right-1 bg-black/50 text-white rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity"
+                                    >
+                                        <X size={14} />
+                                    </button>
                                 </div>
                             ))}
 
@@ -245,6 +279,17 @@ export const CreateNoteModal: React.FC<CreateNoteModalProps> = ({ isOpen, onClos
                     </div>
                 )
             }
+
+            {/* Alert Modal */}
+            <AlertModal
+                isOpen={alertConfig.isOpen}
+                onClose={() => {
+                    setAlertConfig(prev => ({ ...prev, isOpen: false }));
+                    if (alertConfig.onClose) alertConfig.onClose();
+                }}
+                title={alertConfig.title}
+                message={alertConfig.message}
+            />
         </div >
     );
 };

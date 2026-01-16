@@ -10,6 +10,7 @@ import Link from "next/link";
 import { LocationPickerModal } from "@/components/property/LocationPickerModal";
 import { PageLoader } from "@/components/ui/PageLoader";
 import { LanguageSwitcher } from "@/components/layout/LanguageSwitcher";
+import { AlertModal } from "@/components/ui/AlertModal";
 
 export default function PostPropertyPage() {
     return (
@@ -29,6 +30,15 @@ function PostPropertyContent() {
     const [currentStep, setCurrentStep] = useState(1);
     const [propertyId, setPropertyId] = useState<string | null>(null);
     const [isSaving, setIsSaving] = useState(false);
+    const [isProcessing, setIsProcessing] = useState(false);
+
+    // Alert State
+    const [alertConfig, setAlertConfig] = useState<{
+        isOpen: boolean;
+        title: string;
+        message: string;
+        onClose?: () => void;
+    }>({ isOpen: false, title: '', message: '' });
 
     const [listingStatus, setListingStatus] = useState<'owner' | 'agent' | ''>('');
     const [listingType, setListingType] = useState<string>('');
@@ -121,14 +131,38 @@ function PostPropertyContent() {
                         if (data.facilities) {
                             const facilitiesData = data.facilities.map((f: any) => f.facility);
 
-                            // Reverse Map for Nearby & Facilities
+                            // Reverse Map for Nearby & Facilities & Highlights
                             const reverseMap: { [key: string]: string } = {
                                 'ใกล้ห้าง': 'mall', 'ใกล้รถไฟฟ้า': 'train', 'ใกล้สถานศึกษา': 'school',
                                 'ใกล้โรงพยาบาล': 'hospital', 'ใกล้สนามบิน': 'airport',
-                                'EV Charger': 'ev', 'Wi-Fi': 'wifi', 'ที่จอดรถ': 'parking', 'สระว่ายน้ำ': 'pool'
+                                'EV Charger': 'ev', 'Wi-Fi': 'wifi', 'ที่จอดรถ': 'parking', 'สระว่ายน้ำ': 'pool',
+                                'ห้องมุม': 'cornerRoom', 'วิวสวย': 'niceView', 'ตกแต่งสวย': 'beautifulDecor',
+                                'พร้อมอยู่': 'readyToMove', 'เลี้ยงสัตว์ได้': 'petFriendly',
+                                'ทิศเหนือ': 'northFacing', 'ทิศใต้': 'southFacing'
+                                // 'ใกล้รถไฟฟ้า' maps to 'train' primarily for nearby, but check if conflict with highlight 'nearBTS'?
+                                // 'ใกล้รถไฟฟ้า' is used for BOTH 'nearBTS' (Highlight) and 'train' (Nearby).
+                                // But they are distinguished by TYPE in the DB facility list before mapping.
+                                // Highlights use type 'HIGHLIGHT', Nearby use type 'NEARBY'.
+                                // So we need separate maps or handle conflict?
+                                // Actually, 'reverseMap' is just a dictionary.
+                                // If 'ใกล้รถไฟฟ้า' is passed, it returns 'train'.
+                                // For highlight 'nearBTS', DB says 'ใกล้รถไฟฟ้า'.
+                                // If we rely on this single map, 'highlights' set will get 'train' instead of 'nearBTS'.
+                                // This causes a mismatch with the render key 'nearBTS'. 
                             };
 
-                            setHighlights(facilitiesData.filter((f: any) => f.type === 'HIGHLIGHT').map((f: any) => f.name));
+                            // Specific reverse map for Highlights to handle 'ใกล้รถไฟฟ้า' -> 'nearBTS'
+                            const reverseHighlightMap: { [key: string]: string } = {
+                                'ห้องมุม': 'cornerRoom', 'วิวสวย': 'niceView', 'ตกแต่งสวย': 'beautifulDecor',
+                                'พร้อมอยู่': 'readyToMove', 'เลี้ยงสัตว์ได้': 'petFriendly',
+                                'ทิศเหนือ': 'northFacing', 'ทิศใต้': 'southFacing', 'ใกล้รถไฟฟ้า': 'nearBTS'
+                            };
+
+                            setHighlights(
+                                facilitiesData
+                                    .filter((f: any) => f.type === 'HIGHLIGHT')
+                                    .map((f: any) => reverseHighlightMap[f.name] || f.name)
+                            );
 
                             const facs = facilitiesData
                                 .filter((f: any) => f.type === 'FACILITY')
@@ -152,7 +186,58 @@ function PostPropertyContent() {
     }, [editId, user]);
 
     const uploadFiles = async (files: File[]) => {
-        const uploadPromises = files.map(async (file) => {
+        // 1. Check Max Files Limit (Total images cannot exceed 20)
+        if (images.length + files.length > 20) {
+            setAlertConfig({
+                isOpen: true,
+                title: 'ข้อจำกัดการอัปโหลด',
+                message: t('errMaxFiles')
+            });
+            return;
+        }
+
+        // 2. Filter File Size (> 5MB)
+        const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+        const validFiles: File[] = [];
+        let hasLargeFile = false;
+
+        files.forEach(file => {
+            if (file.size > MAX_FILE_SIZE) {
+                hasLargeFile = true;
+            } else {
+                validFiles.push(file);
+            }
+        });
+
+        if (hasLargeFile && validFiles.length < files.length) {
+            setAlertConfig({
+                isOpen: true,
+                title: 'แจ้งเตือน',
+                message: t('errFileSize')
+            });
+            // Should we stop or continue with valid files?
+            // Requirement says "size not exceed 5MB".
+            // If we have some valid files, we could continue, but it's safer to let user know clearly.
+            // Let's proceed with valid ones but warn them.
+        }
+
+        if (validFiles.length === 0) return;
+
+        // 3. Check Total Size (> 100MB)
+        const MAX_TOTAL_SIZE = 100 * 1024 * 1024; // 100MB
+        const totalSize = validFiles.reduce((acc, file) => acc + file.size, 0);
+
+        if (totalSize > MAX_TOTAL_SIZE) {
+            setAlertConfig({
+                isOpen: true,
+                title: 'ข้อจำกัดการอัปโหลด',
+                message: t('errTotalSize')
+            });
+            return;
+        }
+
+        setIsProcessing(true);
+        const uploadPromises = validFiles.map(async (file) => {
             const formData = new FormData();
             formData.append('file', file);
             try {
@@ -168,6 +253,7 @@ function PostPropertyContent() {
         const results = await Promise.all(uploadPromises);
         const validUrls = results.filter((url): url is string => url !== null);
         setImages(prev => [...prev, ...validUrls]);
+        setIsProcessing(false);
     };
 
     const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -329,7 +415,19 @@ function PostPropertyContent() {
                 commissionRate,
                 note,
                 images,
-                highlights,
+                highlights: highlights.map(id => {
+                    const map: { [key: string]: string } = {
+                        'cornerRoom': 'ห้องมุม',
+                        'niceView': 'วิวสวย',
+                        'beautifulDecor': 'ตกแต่งสวย',
+                        'readyToMove': 'พร้อมอยู่',
+                        'petFriendly': 'เลี้ยงสัตว์ได้',
+                        'northFacing': 'ทิศเหนือ',
+                        'southFacing': 'ทิศใต้',
+                        'nearBTS': 'ใกล้รถไฟฟ้า'
+                    };
+                    return map[id] || id;
+                }),
                 facilities: facilities.map(id => {
                     const map: { [key: string]: string } = {
                         'ev': 'EV Charger', 'wifi': 'Wi-Fi', 'parking': 'ที่จอดรถ', 'pool': 'สระว่ายน้ำ'
@@ -359,17 +457,30 @@ function PostPropertyContent() {
                 if (data.data.id) setPropertyId(data.data.id);
 
                 if (isPublish) {
-                    alert('ประกาศของคุณถูกเผยแพร่สำเร็จ!');
-                    router.push(`/property/${data.data.id}`);
+                    setAlertConfig({
+                        isOpen: true,
+                        title: 'สำเร็จ',
+                        message: 'ประกาศของคุณถูกเผยแพร่สำเร็จ!',
+                        onClose: () => router.push(`/property/${data.data.id}`)
+                    });
                 } else {
                     // Draft saved
-                    alert('บันทึกร่างสำเร็จเรียบร้อย');
-                    router.push('/my-properties');
+                    setAlertConfig({
+                        isOpen: true,
+                        title: 'สำเร็จ',
+                        message: 'บันทึกร่างสำเร็จเรียบร้อย',
+                        onClose: () => router.push('/my-properties')
+                    });
                 }
             }
         } catch (error) {
             console.error(error);
-            alert('เกิดข้อผิดพลาดในการบันทึกข้อมูล');
+            setAlertConfig({
+                isOpen: true,
+                title: 'เกิดข้อผิดพลาด',
+                message: 'เกิดข้อผิดพลาดในการบันทึกข้อมูล กรุณาลองใหม่อีกครั้ง',
+                onClose: () => { }
+            });
         } finally {
             setIsSaving(false);
         }
@@ -539,13 +650,13 @@ function PostPropertyContent() {
                                 <div className="grid grid-cols-3 gap-4">
                                     {[
                                         { id: 'condo', label: t('condo') },
-                                        { id: 'apartment', label: 'Apartment' },
+                                        { id: 'apartment', label: t('apartment') },
                                         { id: 'house', label: t('house') },
-                                        { id: 'twin_house', label: 'Twin House' },
-                                        { id: 'townhome', label: 'Townhome' },
-                                        { id: 'home_office', label: 'Home Office' },
+                                        { id: 'twin_house', label: t('twinHouse') },
+                                        { id: 'townhome', label: t('townhome') },
+                                        { id: 'home_office', label: t('homeOffice') },
                                         { id: 'land', label: t('land') },
-                                        { id: 'pool_villa', label: 'Pool Villa' },
+                                        { id: 'pool_villa', label: t('poolVilla') },
                                     ].map((prop) => (
                                         <button
                                             key={prop.id}
@@ -565,14 +676,14 @@ function PostPropertyContent() {
                                 <div className="text-sm font-medium text-slate-500 mb-2">{t('commercial')}</div>
                                 <div className="grid grid-cols-3 gap-4">
                                     {[
-                                        { id: 'co_working', label: 'Co-working Space' },
-                                        { id: 'shop', label: 'Shop / Market' },
-                                        { id: 'commercial', label: 'Commercial Building' },
-                                        { id: 'office', label: 'Office' },
-                                        { id: 'factory', label: 'Factory' },
-                                        { id: 'showroom', label: 'Showroom' },
-                                        { id: 'warehouse', label: 'Warehouse' },
-                                        { id: 'hotel', label: 'Hotel & Resort' },
+                                        { id: 'co_working', label: t('coWorking') },
+                                        { id: 'shop', label: t('shopMarket') },
+                                        { id: 'commercial', label: t('commercialBuilding') },
+                                        { id: 'office', label: t('office') },
+                                        { id: 'factory', label: t('factory') },
+                                        { id: 'showroom', label: t('showroom') },
+                                        { id: 'warehouse', label: t('warehouse') },
+                                        { id: 'hotel', label: t('hotelResort') },
                                     ].map((prop) => (
                                         <button
                                             key={prop.id}
@@ -1392,6 +1503,17 @@ function PostPropertyContent() {
                 onConfirm={(newAddress) => setAddress(newAddress)}
                 initialAddress={address}
             />
+
+            <AlertModal
+                isOpen={alertConfig.isOpen}
+                onClose={() => {
+                    setAlertConfig(prev => ({ ...prev, isOpen: false }));
+                    if (alertConfig.onClose) alertConfig.onClose();
+                }}
+                title={alertConfig.title}
+                message={alertConfig.message}
+            />
+            {isProcessing && <PageLoader />}
         </div >
     );
 }

@@ -14,7 +14,7 @@ export const PageLoader: React.FC<PageLoaderProps> = ({ className = "", variant 
     React.useEffect(() => {
         const timer = setTimeout(() => {
             setIsVisible(true);
-        }, 3000); // 3 seconds delay
+        }, 1000); // 1 second delay
 
         return () => clearTimeout(timer);
     }, []);

@@ -3,8 +3,9 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { User, Lock, Facebook, ArrowRight, LogIn } from "lucide-react";
+import { User, Lock, Facebook, ArrowRight } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
+import { Logo } from "@/components/ui/Logo";
 
 // Mock Google Icon (Reused component)
 const GoogleIcon = () => (
@@ -88,16 +89,16 @@ export default function LoginPage() {
             <div className="w-full max-w-md bg-white rounded-2xl shadow-xl p-8">
 
                 {/* Header */}
-                <div className="flex items-center gap-3 mb-8">
-                    <LogIn className="text-slate-700" size={24} />
+                <div className="flex flex-col items-center gap-4 mb-8">
+                    <Logo />
                     <h1 className="text-xl font-medium text-slate-800">เข้าสู่ระบบเพื่อดำเนินการต่อ</h1>
                 </div>
 
                 <form onSubmit={handleContinue} className="space-y-6">
                     <div>
                         <div className="flex justify-between mb-2">
-                            <label className="text-[#1FB992] text-sm font-medium">เข้าสู่ระบบด้วย</label>
-                            <User className="text-[#1FB992]" size={18} />
+                            <label className="text-brand-600 text-sm font-medium">เข้าสู่ระบบด้วย</label>
+                            <User className="text-brand-600" size={18} />
                         </div>
 
                         {step === 1 ? (
@@ -107,7 +108,7 @@ export default function LoginPage() {
                                     type="text"
                                     value={identifier}
                                     onChange={(e) => setIdentifier(e.target.value)}
-                                    className="w-full pl-12 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:border-[#1FB992] focus:ring-1 focus:ring-[#1FB992]/20 text-slate-700 placeholder-slate-400 transition-all"
+                                    className="w-full pl-12 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:border-brand-600 focus:ring-1 focus:ring-brand-600/20 text-slate-700 placeholder-slate-400 transition-all"
                                     placeholder="เบอร์โทร / อีเมล / ชื่อผู้ใช้ (Username)"
                                     autoFocus
                                 />
@@ -119,7 +120,7 @@ export default function LoginPage() {
                                     type="password"
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
-                                    className="w-full pl-12 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:border-[#1FB992] focus:ring-1 focus:ring-[#1FB992]/20 text-slate-700 placeholder-slate-400 transition-all"
+                                    className="w-full pl-12 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:border-brand-600 focus:ring-1 focus:ring-brand-600/20 text-slate-700 placeholder-slate-400 transition-all"
                                     placeholder="รหัสผ่าน"
                                     autoFocus
                                 />
@@ -130,7 +131,7 @@ export default function LoginPage() {
                             <button
                                 type="button"
                                 onClick={() => setStep(1)}
-                                className="text-xs text-slate-400 hover:text-[#1FB992] mt-2 block"
+                                className="text-xs text-slate-400 hover:text-brand-600 mt-2 block"
                             >
                                 ← กลับไปแก้ไขชื่อผู้ใช้
                             </button>
@@ -147,7 +148,7 @@ export default function LoginPage() {
                     <button
                         type="submit"
                         disabled={isLoading}
-                        className="w-full bg-[#1FB992] hover:bg-[#1aad88] text-white font-medium py-3 rounded-lg shadow-lg shadow-[#1FB992]/20 hover:shadow-xl transition-all duration-300 transform active:scale-[0.98] flex items-center justify-center gap-2"
+                        className="w-full bg-brand-600 hover:bg-brand-700 text-white font-medium py-3 rounded-lg shadow-lg shadow-brand-600/20 hover:shadow-xl transition-all duration-300 transform active:scale-[0.98] flex items-center justify-center gap-2"
                     >
                         {isLoading ? 'Processing...' : (step === 1 ? 'ดำเนินการต่อ' : 'เข้าสู่ระบบ')}
                         {!isLoading && step === 1 && <ArrowRight size={18} />}
@@ -178,7 +179,7 @@ export default function LoginPage() {
 
                 {/* Footer */}
                 <div className="mt-8 text-center space-x-2 text-slate-600 text-sm">
-                    <Link href="/register" className="text-[#3AB0FF] underline hover:text-[#2a90d9] font-medium">
+                    <Link href="/register" className="text-brand-600 underline hover:text-brand-700 font-medium">
                         สมัครสมาชิกฟรี
                     </Link>
                     <span>ใช้งานได้ทันที</span>

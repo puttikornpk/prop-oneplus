@@ -20,62 +20,46 @@ export default function MyPropertiesPage() {
     const [isPropertiesLoading, setIsPropertiesLoading] = useState(true);
     const [activeTab, setActiveTab] = useState('all');
 
+    const fetchProperties = React.useCallback(async () => {
+        if (!user) return;
+
+        try {
+            setIsPropertiesLoading(true);
+            const res = await fetch('/api/properties');
+
+            if (res.status === 401) {
+                console.error("API returned 401 Unauthorized");
+                alert("Session expired. Please log in again.");
+                return;
+            }
+
+            if (res.ok) {
+                const data = await res.json();
+                setProperties(data);
+            } else {
+                console.error("API Error:", res.status, res.statusText);
+                const err = await res.text();
+                console.error("Error details:", err);
+                alert(`Failed to load properties: ${res.statusText}`);
+            }
+        } catch (error) {
+            console.error("Failed to fetch properties", error);
+            alert("Failed to fetch properties. See console.");
+        } finally {
+            setIsPropertiesLoading(false);
+        }
+    }, [user]);
+
     useEffect(() => {
         if (!isLoading && !user) {
             router.push('/');
             return;
         }
 
-        const fetchProperties = async () => {
-            try {
-                // If using localStorage token, we might need to pass it in headers manually
-                // But existing fetch might expect cookies.
-                // Assuming existing API relies on NextAuth session (cookies).
-                // If there is a mismatch (Frontend uses LocalStorage, Backend uses Cookies), this fetch will fail 401.
-                // Let's assume for now the API works or we need to fix API call too.
-                // Actually, Step 1100 showed API using getServerSession.
-                // This implies we DO need NextAuth session.
-
-                // CRITICAL: If Header uses AuthContext (LocalStorage) but API uses GetServerSession (Cookies),
-                // we have a split brain. The user might be "logged in" on client (AuthContext) but not on server (NextAuth).
-
-                // However, the REQUEST is "My Properties page redirects to Home".
-                // This is caused by client-side check.
-                // Changing this check allows the page to LOAD. 
-                // Whether the data loads depends on the API.
-
-                const res = await fetch('/api/properties');
-
-                if (res.status === 401) {
-                    // Session expired or missing cookie
-                    console.error("API returned 401 Unauthorized");
-                    alert("Session expired. Please log in again.");
-                    // Optionally redirect or force logout?
-                    // router.push('/'); 
-                    return;
-                }
-
-                if (res.ok) {
-                    const data = await res.json();
-                    setProperties(data);
-                } else {
-                    console.error("API Error:", res.status, res.statusText);
-                    const err = await res.text();
-                    console.error("Error details:", err);
-                    alert(`Failed to load properties: ${res.statusText}`);
-                }
-            } catch (error) {
-                console.error("Failed to fetch properties", error);
-                alert("Failed to fetch properties. See console.");
-            } finally {
-                setIsPropertiesLoading(false);
-            }
-        };
-
         if (!isLoading && user) {
             fetchProperties();
         }
-    }, [user, isLoading, router]);
+    }, [user, isLoading, router, fetchProperties]);
 
     // Statistics Counts
     const stats = {
@@ -187,7 +171,7 @@ export default function MyPropertiesPage() {
                         <div className="space-y-4">
                             {filteredProperties.length > 0 ? (
                                 filteredProperties.map((property) => (
-                                    <MyPropertyCard key={property.id} property={property} />
+                                    <MyPropertyCard key={property.id} property={property} onRefresh={fetchProperties} />
                                 ))
                             ) : (
                                 <div className="text-center py-12 text-slate-400">

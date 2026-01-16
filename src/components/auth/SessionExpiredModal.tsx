@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { X } from 'lucide-react';
+import { Logo } from '@/components/ui/Logo';
 
 interface SessionExpiredModalProps {
     isOpen: boolean;
@@ -19,12 +20,12 @@ export function SessionExpiredModal({ isOpen, onConfirm }: SessionExpiredModalPr
             {/* Modal */}
             <div className="bg-white rounded-2xl shadow-xl w-full max-w-sm relative z-10 overflow-hidden animate-in zoom-in-95 duration-200">
                 <div className="p-6 text-center space-y-4">
-                    <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto text-red-600">
-                        <span className="text-2xl font-bold">!</span>
+                    <div className="flex justify-center pb-2">
+                        <Logo />
                     </div>
 
                     <div>
-                        <h3 className="text-lg font-bold text-slate-800">เซสชั่นหมดอายุ</h3>
+                        <h3 className="text-lg font-bold text-brand-600">เซสชั่นหมดอายุ</h3>
                         <p className="text-slate-500 text-sm mt-2">
                             คุณไม่ได้ใช้งานระบบตามเวลาที่กำหนด (15 นาที) กรุณาเข้าสู่ระบบใหม่อีกครั้ง
                         </p>
