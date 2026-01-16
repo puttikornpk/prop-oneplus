@@ -13,8 +13,6 @@ export const translations = {
     myProperties: { TH: "ประกาศของฉัน", EN: "My Properties" },
     editProfile: { TH: "แก้ไขข้อมูลส่วนตัว", EN: "Edit Profile" },
     contactSupport: { TH: "ติดต่อเจ้าหน้าที่", EN: "Contact Support" },
-    confirmDelete: { TH: "คุณแน่ใจหรือไม่ว่าต้องการลบประกาศนี้?", EN: "Are you sure you want to delete this property?" },
-    confirmDeleteTitle: { TH: "ยืนยันการลบ", EN: "Confirm Delete" },
     topUp: { TH: "เติมเครดิต", EN: "Top Up" },
 
     // Sidebar
@@ -136,6 +134,7 @@ export const translations = {
     delete: { TH: "ลบประกาศ", EN: "Delete" },
     deleteDesc: { TH: "ลบประกาศนี้ออกจากระบบ", EN: "Remove this listing" },
     confirmDelete: { TH: "คุณแน่ใจหรือไม่ว่าต้องการลบประกาศนี้?", EN: "Are you sure you want to delete this listing?" },
+    confirmDeleteTitle: { TH: "ยืนยันการลบ", EN: "Confirm Delete" },
     publish: { TH: "เผยแพร่", EN: "Publish" },
     draftedAt: { TH: "ร่างเมื่อ :", EN: "Drafted :" },
     expiredAt: { TH: "หมดอายุ :", EN: "Expires :" },
